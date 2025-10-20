@@ -1,7 +1,6 @@
 {
   "name": "@quarkid/dwn-client-ami",
   "version": "1.0.2",
-  "private": false,
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {

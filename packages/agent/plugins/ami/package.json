@@ -3,7 +3,6 @@
   "version": "0.1.2",
   "description": "Ami Agent Plugin",
   "main": "dist/index.js",
-  "private": false,
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",

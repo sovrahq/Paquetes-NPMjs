@@ -1,0 +1,127 @@
+# ============================================================
+# QUARKID MONOREPO - .gitignore
+# Yarn 4.x + TypeScript + Multi-package workspace
+# ============================================================
+
+# --- Core node & yarn ---
+node_modules/
+.yarn/*
+!.yarn/releases/
+!.yarn/plugins/
+!.yarn/sdks/
+!.yarn/versions/
+!.yarn/cache/
+!.yarnrc.yml
+.pnp.*
+.yarn-integrity
+yarn-error.log
+.yarn/install-state.gz
+
+# --- Logs ---
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+debug.log*
+
+# --- Build outputs ---
+dist/
+build/
+lib/
+out/
+coverage/
+.tmp/
+.temp/
+.cache/
+.esbuild/
+.next/
+.nuxt/
+.vscode-test/
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.sublime-project
+*.sublime-workspace
+
+# --- System / OS ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+*.log
+*.bak
+*.tmp
+
+# --- Test / reports ---
+*.lcov
+coverage/
+jest-html-reporters-*.html
+test-results.xml
+
+# --- Local env/config ---
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local.json
+*.local.yml
+
+# --- Lockfiles dentro de los subpackages ---
+packages/**/yarn.lock
+packages/**/package-lock.json
+packages/**/pnpm-lock.yaml
+
+# --- Yarn plugin cache ---
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# --- TypeScript build artifacts ---
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# --- Misc ---
+*.tgz
+*.orig
+*.rej
+*.bak
+*.tmp
+*.log
+
+# --- VSCode data ---
+.history/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# --- Local testing / playgrounds ---
+playground/
+sandbox/
+examples/node_modules/
+examples/dist/
+
+# --- GitHub Actions temp ---
+.github/workflows/*.tmp.yml
+
+# --- Ignore local package test outputs ---
+packages/**/__test__/data/
+packages/**/__test__/pdf/
+packages/**/__test__/*.spec.ts
+packages/**/__test__/*.test.ts
+packages/**/__test__/*.json
+
+# --- Local publish artifacts ---
+*.tgz
+*.zip
+*.tar
+*.tar.gz
+
+# --- Local scripts or workspace helpers ---
+scripts/local/*

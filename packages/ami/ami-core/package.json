@@ -8,7 +8,6 @@
     "build": "tsc --project tsconfig.build.json",
     "test": "echo 'no tests implemented'"
   },
-  "private": false,
   "typings": "dist/index.d.ts",
   "keywords": [],
   "author": "QuarkID",

@@ -20,9 +20,9 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
+    "@hearro/didcomm": "^0.6.0",
     "@quarkid/did-core": "1.1.1",
     "@quarkid/kms-core": "^1.4.0-3",
-    "@hearro/didcomm": "^0.6.0",
     "@types/libsodium-wrappers": "^0.7.9",
     "did-jwt": "^6.8.0",
     "jsonld": "^5.2.0",

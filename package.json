@@ -5,7 +5,7 @@
   "workspaces": [
     "packages/did/core",
     "packages/did/resolver",
-    "packages/core/**",
+    "packages/core",
     "packages/vc/core",
     "packages/kms/core",
     "packages/vc/**",

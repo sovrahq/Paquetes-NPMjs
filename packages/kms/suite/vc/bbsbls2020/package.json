@@ -20,9 +20,9 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
+    "@mattrglobal/jsonld-signatures-bbs": "0.12.0",
     "@quarkid/did-core": "1.1.1",
     "@quarkid/kms-suite-jsonld": "^1.1.2",
-    "@quarkid/vc-core": "1.1.0-1",
-    "@mattrglobal/jsonld-signatures-bbs": "0.12.0"
+    "@quarkid/vc-core": "1.1.0-1"
   }
 }

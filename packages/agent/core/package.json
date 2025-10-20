@@ -3,7 +3,6 @@
   "version": "0.10.0-6",
   "description": "Agent SDK",
   "main": "dist/index.js",
-  "private": false,
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
