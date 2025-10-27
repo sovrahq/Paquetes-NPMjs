@@ -2,7 +2,7 @@
   "author": "QuarkID",
   "license": "Apache-2.0",
   "name": "@quarkid/did-comm",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -21,10 +21,10 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@quarkid/core": "1.0.6",
-    "@quarkid/did-core": "1.1.1",
-    "@quarkid/did-resolver": "1.4.5",
-    "@quarkid/kms-client": "1.4.0-3",
-    "@quarkid/kms-core": "1.4.0-3"
+    "@quarkid/core": "1.0.7",
+    "@quarkid/did-core": "1.1.2",
+    "@quarkid/did-resolver": "1.4.6",
+    "@quarkid/kms-client": "1.4.0-4",
+    "@quarkid/kms-core": "1.4.0-4"
   }
 }

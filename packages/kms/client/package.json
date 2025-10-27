@@ -1,6 +1,6 @@
 {
   "name": "@quarkid/kms-client",
-  "version": "1.4.0-3",
+  "version": "1.4.0-4",
   "description": "",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
@@ -21,16 +21,16 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@quarkid/kms-core": "^1.4.0-3",
-    "@quarkid/kms-suite-bbsbls2020": "1.2.0-1",
-    "@quarkid/kms-suite-didcomm": "^1.1.1",
-    "@quarkid/kms-suite-didcomm-v2": "^1.3.1",
-    "@quarkid/kms-suite-es256k": "^1.2.3",
-    "@quarkid/kms-suite-rsa-signature-2018": "^1.1.2",
-    "@quarkid/vc-core": "1.1.0-1",
+    "@quarkid/kms-core": "^1.4.0-4",
+    "@quarkid/kms-suite-bbsbls2020": "1.2.0-2",
+    "@quarkid/kms-suite-didcomm": "^1.1.2",
+    "@quarkid/kms-suite-didcomm-v2": "^1.3.2",
+    "@quarkid/kms-suite-es256k": "^1.2.4",
+    "@quarkid/kms-suite-rsa-signature-2018": "^1.1.3",
+    "@quarkid/vc-core": "1.1.0-2",
     "ts-jest": "^28.0.1"
   },
   "peerDependencies": {
-    "@quarkid/did-core": "1.1.1"
+    "@quarkid/did-core": "1.1.2"
   }
 }
