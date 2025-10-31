@@ -24,6 +24,8 @@
   },
   "dependencies": {
     "@quarkid/ami-core": "0.1.2",
-    "@quarkid/kms-core": "1.4.0-4"
+    "@quarkid/did-core": "1.1.2",
+    "@quarkid/kms-core": "1.4.0-4",
+    "@quarkid/vc-core": "1.1.0-2"
   }
 }

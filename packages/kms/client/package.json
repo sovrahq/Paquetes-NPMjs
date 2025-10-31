@@ -21,6 +21,7 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
+    "@quarkid/did-core": "1.1.2",
     "@quarkid/kms-core": "^1.4.0-4",
     "@quarkid/kms-suite-bbsbls2020": "1.2.0-2",
     "@quarkid/kms-suite-didcomm": "^1.1.2",
@@ -31,6 +32,7 @@
     "ts-jest": "^28.0.1"
   },
   "peerDependencies": {
-    "@quarkid/did-core": "1.1.2"
+    "@quarkid/did-core": "1.1.2",
+    "@quarkid/vc-core": "1.1.0-2"
   }
 }

@@ -6,8 +6,10 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "dependencies": {
+    "@quarkid/did-core": "1.1.2",
     "@quarkid/kms-client": "1.4.0-4",
     "@quarkid/kms-core": "1.4.0-4",
+    "@quarkid/vc-core": "1.1.0-2",
     "@transmute/did-key-secp256k1": "^0.2.1-unstable.35",
     "@waiting/base64": "4.2.9",
     "canonicalize": "1.0.1",

@@ -24,6 +24,8 @@
     "@quarkid/agent": "0.10.0-7"
   },
   "dependencies": {
+    "@quarkid/agent": "0.10.0-7",
+    "@quarkid/vc-core": "1.1.0-2",
     "axios": "^1.7.2"
   }
 }
