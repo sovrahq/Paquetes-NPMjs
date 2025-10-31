@@ -1,9 +1,6 @@
 #!/usr/bin/env node
-// bump-quarkid-versions.mjs (v2: walk recursivo en packages/**, ignora node_modules)
-// - Bumpea "version" de TODOS los package.json bajo packages/** (carpetas y subcarpetas)
-// - Actualiza SOLO deps internas "@quarkid/*" para que coincidan con las nuevas versiones locales
-// - --dry: lista carpetas a tocar + cantidad + plan de cambios (sin escribir)
-// - --verbose: loguea cada dep interna actualizada al aplicar
+// Script para incrementar versiones de todos los paquetes del monorepo
+// y actualizar referencias internas entre ellos
 import fs from "fs/promises";
 import path from "path";
 
@@ -12,6 +9,7 @@ const PACKAGES_DIR = path.join(ROOT, "packages");
 const DRY = process.argv.includes("--dry") || process.argv.includes("-n");
 const VERBOSE = process.argv.includes("--verbose");
 
+// Carpetas que no queremos procesar
 const SKIP_DIRS = new Set([
   "node_modules",
   ".git",
@@ -26,6 +24,7 @@ const SKIP_DIRS = new Set([
   ".pnpm",
 ]);
 
+// Campos donde buscamos dependencias a actualizar
 const DEP_FIELDS = [
   "dependencies",
   "devDependencies",
@@ -42,6 +41,7 @@ async function exists(p) {
   }
 }
 
+// Recorre recursivamente la carpeta packages/ y encuentra todos los package.json
 async function walkPackages(dir) {
   const out = [];
   const stack = [dir];
@@ -55,27 +55,26 @@ async function walkPackages(dir) {
       continue;
     }
 
-    // Si esta carpeta tiene package.json, la agrego
     const pj = path.join(cur, "package.json");
     if (await exists(pj)) out.push({ dir: cur, file: pj });
 
-    // Desciendo a subdirectorios (ignorando los de SKIP_DIRS)
     for (const ent of entries) {
       if (!ent.isDirectory()) continue;
       if (SKIP_DIRS.has(ent.name)) continue;
-      // ignora carpetas ocultas tipo .cache
       if (ent.name.startsWith(".")) continue;
       stack.push(path.join(cur, ent.name));
     }
   }
 
-  // Devolver únicos por ruta de package.json
+  // Eliminar duplicados si los hay
   const seen = new Set();
   return out.filter(({ file }) =>
     seen.has(file) ? false : (seen.add(file), true)
   );
 }
 
+// Incrementa el último número de la versión según diferentes formatos
+// Soporta: 1.2.3 -> 1.2.4, 1.2.3-4 -> 1.2.3-5, 1.2.3-alpha.4 -> 1.2.3-alpha.5
 function bumpVersion(v) {
   let m = v.match(/^(\d+)\.(\d+)\.(\d+)-(\d+)$/);
   if (m) return `${m[1]}.${m[2]}.${m[3]}-${Number(m[4]) + 1}`;
@@ -95,15 +94,17 @@ function bumpVersion(v) {
 const isQuarkid = (name) =>
   typeof name === "string" && name.startsWith("@quarkid/");
 
+// Convierte dependencias tipo workspace: a semver normal
 function fromWorkspaceToSemver(oldSpec, newVersion) {
   if (typeof oldSpec !== "string") return newVersion;
   if (!oldSpec.startsWith("workspace:")) return null;
   const rest = oldSpec.slice("workspace:".length).trim();
   if (rest.startsWith("^")) return `^${newVersion}`;
   if (rest.startsWith("~")) return `~${newVersion}`;
-  return `^${newVersion}`; // workspace:* o sin prefijo -> usamos ^ por defecto
+  return `^${newVersion}`;
 }
 
+// Mantiene el prefijo de rango (^, ~, etc.) al actualizar la versión
 function preserveRangePrefix(oldSpec, newVersion) {
   const ws = fromWorkspaceToSemver(oldSpec, newVersion);
   if (ws !== null) return ws;
@@ -113,6 +114,13 @@ function preserveRangePrefix(oldSpec, newVersion) {
 
   const m = oldSpec.match(/^(\^|~|>=|<=|>|<|=)?\s*(.+)$/);
   const prefix = m?.[1] ?? "";
+  const currentVersion = m?.[2] ?? oldSpec;
+  
+  // Si no hay prefijo, mantener versión exacta
+  if (currentVersion === oldSpec && !prefix) {
+    return newVersion;
+  }
+
   return `${prefix}${newVersion}`;
 }
 
@@ -128,7 +136,7 @@ async function main() {
     process.exit(1);
   }
 
-  // Cargar y calcular nuevas versiones
+  // Cargar todos los package.json y calcular las nuevas versiones
   const pkgs = [];
   for (const t of targets) {
     const txt = await fs.readFile(t.file, "utf8");
@@ -149,12 +157,12 @@ async function main() {
     });
   }
 
-  // Mapa name -> newVersion (solo locales)
+  // Mapa para buscar rápido las nuevas versiones por nombre de paquete
   const nameToNewVersion = new Map(
     pkgs.map((p) => [p.json.name, p.newVersion])
   );
 
-  // DRY: listar rutas y conteo
+  // Mostrar qué vamos a actualizar
   console.log("== Carpetas objetivo (packages/**) ==");
   pkgs
     .map((p) => path.relative(ROOT, p.dir))
@@ -162,7 +170,6 @@ async function main() {
     .forEach((rel) => console.log("•", rel));
   console.log(`\nTotal paquetes locales encontrados: ${pkgs.length}\n`);
 
-  // Plan de cambios
   console.log("== Plan de bump de versiones ==");
   for (const p of pkgs.sort((a, b) => a.json.name.localeCompare(b.json.name))) {
     console.log(`• ${p.json.name}: ${p.json.version}  ->  ${p.newVersion}`);
@@ -175,21 +182,21 @@ async function main() {
     return;
   }
 
-  // Aplicar cambios
+  // Actualizar cada package.json
   for (const p of pkgs) {
     const j = { ...p.json };
 
-    // 1) version propia
+    // 1) Actualizar la versión del paquete
     j.version = p.newVersion;
 
-    // 2) actualizar deps internas @quarkid/* si existen localmente
+    // 2) Actualizar las referencias a otros paquetes @quarkid/* del monorepo
     for (const field of DEP_FIELDS) {
       const deps = j[field];
       if (!deps) continue;
       for (const depName of Object.keys(deps)) {
         if (!isQuarkid(depName)) continue;
         const newDepVersion = nameToNewVersion.get(depName);
-        if (!newDepVersion) continue; // no es paquete local
+        if (!newDepVersion) continue;
         const oldSpec = deps[depName];
         const nextSpec = preserveRangePrefix(oldSpec, newDepVersion);
         if (VERBOSE && oldSpec !== nextSpec) {
