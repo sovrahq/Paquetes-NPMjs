@@ -1,4 +1,4 @@
-import { Message , IMessageStorage ,IMessageThreadStorage } from "@quarkid/ami-core";
+import { Message , IMessageStorage ,IMessageThreadStorage } from "@sovra/ami-core";
 import {IStorage} from "./storage"
 
 export class MessageStorage implements IMessageStorage {

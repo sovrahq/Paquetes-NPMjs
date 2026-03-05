@@ -1,5 +1,5 @@
 {
-  "name": "@quarkid/agent",
+  "name": "@sovra/agent",
   "version": "0.10.0-7",
   "description": "Agent SDK",
   "main": "dist/index.js",
@@ -25,17 +25,17 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@quarkid/did-core": "1.1.2",
-    "@quarkid/did-registry": "^1.5.2",
-    "@quarkid/did-resolver": "^1.4.6",
-    "@quarkid/dwn-client": "^1.2.2",
-    "@quarkid/dwn-client-ami": "^1.0.3",
-    "@quarkid/kms-client": "1.4.0-4",
-    "@quarkid/kms-core": "1.4.0-4",
-    "@quarkid/modena-sdk": "1.3.4",
-    "@quarkid/vc-core": "1.1.0-2",
-    "@quarkid/vc-verifier": "1.2.0-2",
-    "@quarkid/waci": "~3.2.2",
+    "@sovra/did-core": "1.1.2",
+    "@sovra/did-registry": "^1.5.2",
+    "@sovra/did-resolver": "^1.4.6",
+    "@sovra/dwn-client": "^1.2.2",
+    "@sovra/dwn-client-ami": "^1.0.3",
+    "@sovra/kms-client": "1.4.0-4",
+    "@sovra/kms-core": "1.4.0-4",
+    "@sovra/modena-sdk": "1.3.4",
+    "@sovra/vc-core": "1.1.0-2",
+    "@sovra/vc-verifier": "1.2.0-2",
+    "@sovra/waci": "~3.2.2",
     "@types/base-64": "^1.0.0",
     "async-lock": "^1.4.0",
     "axios": "^1.4.0",
@@ -46,5 +46,9 @@
     "lru-cache": "4.1.5",
     "socket.io": "4.6.1",
     "socket.io-client": "4.6.1"
-  }
+  ,
+  "publishConfig": { "access": "public" }
+}
+,
+  "publishConfig": { "access": "public" }
 }

@@ -14,7 +14,7 @@ export interface IJWK {
   kty: string;
   crv: string;
   x: string;
-  y: string;
+  y?: string;
 }
 
 export class BaseConverter {
@@ -68,14 +68,19 @@ export class BaseConverter {
   }
 
   private static hexToJWK(value: string, keyType: string) {
+    // OKP support (Ed25519 / X25519) — x-only, no y
+    if (keyType === 'OKP' || keyType === 'Ed25519' || keyType === 'X25519') {
+      const hex = value.replace('0x04', '').replace('0x', '');
+      const xBuf = Buffer.from(hex, 'hex');
+      const crv = keyType === 'X25519' ? 'X25519' : 'Ed25519';
+      const b64 = xBuf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      return { kty: 'OKP', crv, x: b64 };
+    }
+
     value = value.replace("0x04", "");
     value = value.replace("0x", "");
-    // if (value.indexOf("04") == 0) {
-    //     value = value.substring(2);
-    // }
 
     return {
-      // kid: "",
       kty: "EC",
       crv: keyType,
       x: this.base64url(
@@ -98,7 +103,14 @@ export class BaseConverter {
     y?: string;
     n?: string;
   }) {
-    // const b1 = multibase.decode();
+    // OKP support (Ed25519, X25519) — only x, no y
+    if (value.kty === 'OKP' || value.crv === 'Ed25519' || value.crv === 'X25519') {
+      const xStr = value.x || '';
+      let padded = xStr.replace(/-/g, '+').replace(/_/g, '/');
+      while (padded.length % 4) padded += '=';
+      return '0x' + Buffer.from(padded, 'base64').toString('hex');
+    }
+
     if (value.kty == "RSA" && value.n) {
       return `0x${Buffer.from(base64urlformats.baseDecode(value.n)).toString("hex")}`
     }
@@ -109,7 +121,6 @@ export class BaseConverter {
       const b2 = Buffer.from(base64urlformats.baseDecode(value.y)).toString(
         "hex"
       );
-      // return `0x04${b1.toString("hex")}${b2.toString("hex")}`;
       return `0x${b1}${b2}`;
     }
 

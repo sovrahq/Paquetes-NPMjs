@@ -1,4 +1,4 @@
-import { DIDDocumentUtils } from '@quarkid/did-core';
+import { DIDDocumentUtils } from '@sovra/did-core';
 import { connect } from 'socket.io-client';
 import { DID } from '../did';
 import { TransportSendRequest } from './transport';

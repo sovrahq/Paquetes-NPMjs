@@ -1,5 +1,5 @@
 import { ChatMessage } from "../chat-message/chat-message"
-import { Message } from "@quarkid/ami-core"
+import { Message } from "@sovra/ami-core"
 
 
 export interface IChatStorage {

@@ -1,7 +1,7 @@
-import { DIDDocument, Purpose, VerificationMethod, VerificationMethodJwk, VerificationMethodPublicKeyPem } from "@quarkid/did-core";
+import { DIDDocument, Purpose, VerificationMethod, VerificationMethodJwk, VerificationMethodPublicKeyPem } from "@sovra/did-core";
 import { JsonLDVCVerifier } from "./jsonld.vc-verifier";
 import { InjectVerifier } from "../../../decorators/inject-verifier-decorator";
-import { VerifiableCredential } from "@quarkid/vc-core";
+import { VerifiableCredential } from "@sovra/vc-core";
 const jsigs = require('jsonld-signatures');
 var jwkToPem = require('jwk-to-pem');
 const { RSAKeyPair } = require('crypto-ld');

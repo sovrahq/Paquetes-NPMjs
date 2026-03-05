@@ -11,13 +11,13 @@ import {
   CredentialFulfillment,
 } from '../../types';
 import { createUUID } from '../../utils';
-import { CredentialPresentationResponse } from '../../callbacks';
 import { isNil } from 'lodash';
 
-@RegisterHandler(Actor.Holder, WACIMessageType.OfferCredential)
-export class OfferCredentialHandler implements WACIMessageHandler {
-  async handle(
+export class OfferCredentialProceed {
+  static async handle(
     messageThread: WACIMessage[],
+    credentialsToPresent: any[],
+    presentationProofTypes: string[],
     callbacks: any,
   ): Promise<WACIMessageHandlerResponse> {
     const message = messageThread[messageThread.length - 1];
@@ -37,17 +37,9 @@ export class OfferCredentialHandler implements WACIMessageHandler {
     if (!credentialApplicationParams.manifest)
       throw new Error('Malformed offer credential message');
 
-    const response = await callbacks[
-      Actor.Holder
-    ].getCredentialApplication(credentialApplicationParams);
-
-    if (response == CredentialPresentationResponse.AsyncProcess) {
-      return;
-    }
-
     const credentialApplication = await this.createMessage(
-      response.credentialsToPresent,
-      response.presentationProofTypes,
+      credentialsToPresent,
+      presentationProofTypes,
       credentialApplicationParams.manifest,
       message,
       callbacks,
@@ -68,7 +60,7 @@ export class OfferCredentialHandler implements WACIMessageHandler {
     };
   }
 
-  private async createMessage(
+  private static async createMessage(
     verifiableCredential: any[],
     proofTypes: string[],
     manifest: CredentialManifest,

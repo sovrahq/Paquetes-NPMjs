@@ -4,11 +4,11 @@ import {
   IAgentPlugin,
   IAgentPluginMessage,
   IAgentPluginResponse,
-} from '@quarkid/agent';
-import { MessageTypes, OneClickMessage, OneClickSDK } from '@quarkid/oneclick-sdk';
+} from '@sovra/agent';
+import { MessageTypes, OneClickMessage, OneClickSDK } from '@sovra/oneclick-sdk';
 import { decode } from 'base-64';
 import { LiteEvent } from '../events/lite-event';
-import { IStorage } from '@quarkid/did-core';
+import { IStorage } from '@sovra/did-core';
 
 export class OneClickPlugin implements IAgentPlugin {
   private agent: Agent;

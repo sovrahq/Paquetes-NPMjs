@@ -1,6 +1,6 @@
-import { AgentSecureStorage } from "@quarkid/agent";
-import { IAgentStorage } from "@quarkid/agent";
-import { IStorage } from "@quarkid/ami-sdk";
+import { AgentSecureStorage } from "@sovra/agent";
+import { IAgentStorage } from "@sovra/agent";
+import { IStorage } from "@sovra/ami-sdk";
 
 export class MemoryStorage implements IStorage {
     mapper: Map<string, any> = new Map();

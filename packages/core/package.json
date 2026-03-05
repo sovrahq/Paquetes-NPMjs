@@ -1,5 +1,5 @@
 {
-  "name": "@quarkid/core",
+  "name": "@sovra/core",
   "version": "1.0.7",
   "description": "",
   "main": "dist/index.js",
@@ -22,5 +22,9 @@
   },
   "dependencies": {
     "reflect-metadata": "^0.1.13"
-  }
+  ,
+  "publishConfig": { "access": "public" }
+}
+,
+  "publishConfig": { "access": "public" }
 }

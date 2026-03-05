@@ -1,5 +1,5 @@
 import { Message } from "../message/message";
-import { IDIDCommThreadStorage , IDIDCommMessageStorage } from "@quarkid/did-core";
+import { IDIDCommThreadStorage , IDIDCommMessageStorage } from "@sovra/did-core";
 
 export interface IMessageStorage extends IDIDCommMessageStorage<Message>{
 

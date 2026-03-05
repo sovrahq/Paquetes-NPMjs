@@ -1,5 +1,5 @@
 {
-  "name": "@quarkid/ami-agent-plugin",
+  "name": "@sovra/ami-agent-plugin",
   "version": "0.1.3",
   "description": "Ami Agent Plugin",
   "main": "dist/index.js",
@@ -21,11 +21,15 @@
     "typescript": "^4.5.4"
   },
   "peerDependencies": {
-    "@quarkid/agent": "0.10.0-7",
-    "@quarkid/one-click-agent-plugin": "0.3.2"
+    "@sovra/agent": "0.10.0-7",
+    "@sovra/one-click-agent-plugin": "0.3.2"
   },
   "dependencies": {
-    "@quarkid/ami-core": "0.1.2",
-    "@quarkid/ami-sdk": "0.1.3"
-  }
+    "@sovra/ami-core": "0.1.2",
+    "@sovra/ami-sdk": "0.1.3"
+  ,
+  "publishConfig": { "access": "public" }
+}
+,
+  "publishConfig": { "access": "public" }
 }

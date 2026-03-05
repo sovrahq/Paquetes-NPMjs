@@ -1,5 +1,5 @@
 {
-  "name": "@quarkid/one-click-agent-plugin",
+  "name": "@sovra/one-click-agent-plugin",
   "version": "0.3.2",
   "description": "One Click Agent Plugin",
   "main": "dist/index.js",
@@ -21,13 +21,17 @@
     "typescript": "^4.5.4"
   },
   "peerDependencies": {
-    "@quarkid/agent": "0.10.0-7"
+    "@sovra/agent": "0.10.0-7"
   },
   "dependencies": {
-    "@quarkid/did-core": "1.1.2",
-    "@quarkid/kms-client": "1.4.0-4",
-    "@quarkid/kms-core": "1.4.0-4",
-    "@quarkid/oneclick-sdk": "0.3.3",
-    "@quarkid/vc-core": "1.1.0-2"
-  }
+    "@sovra/did-core": "1.1.2",
+    "@sovra/kms-client": "1.4.0-4",
+    "@sovra/kms-core": "1.4.0-4",
+    "@sovra/oneclick-sdk": "0.3.3",
+    "@sovra/vc-core": "1.1.0-2"
+  ,
+  "publishConfig": { "access": "public" }
+}
+,
+  "publishConfig": { "access": "public" }
 }

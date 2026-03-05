@@ -3,7 +3,7 @@
 export { AMISDK } from "./ami-sdk";
 export { Message, MessageTypes, ContentType, IMessageStorage,
     IMessageThreadStorage, StandardMessageEvent, ACKMessageEvent, ProblemReportMessageEvent ,
-   StandardMessage , ProblemReportMessage , AckMessage , StandardMessageBodyModel , ProblemReportBodyModel , } from "@quarkid/ami-core";export { IStorage} from './storage/storage'
+   StandardMessage , ProblemReportMessage , AckMessage , StandardMessageBodyModel , ProblemReportBodyModel , } from "@sovra/ami-core";export { IStorage} from './storage/storage'
 export { MessageStorage, MessageThreadStorage } from './storage/MessageStorage'
 export { IChatStorage , IChat} from './storage/IChatStorage'
 export { ChatStorage, Chat} from './storage/ChatStorage'

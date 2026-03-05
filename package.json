@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "quarkid",
+  "name": "sovra-ssi-packages",
   "version": "1.0.0",
   "workspaces": [
     "packages/did/core",

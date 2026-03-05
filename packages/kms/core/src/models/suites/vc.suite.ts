@@ -1,5 +1,5 @@
-import { DIDDocument, Purpose } from "@quarkid/did-core";
-import { VerifiableCredential } from "@quarkid/vc-core";
+import { DIDDocument, Purpose } from "@sovra/did-core";
+import { VerifiableCredential } from "@sovra/vc-core";
 import { IKeyPair } from "../keypair";
 
 export interface IVCJsonLDKeyPair extends IKeyPair {

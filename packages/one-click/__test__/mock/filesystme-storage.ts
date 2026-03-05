@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { IAgentStorage } from '@quarkid/agent';
+import { IAgentStorage } from '@sovra/agent';
 
 export class FileSystemStorage implements IAgentStorage {
     public readonly filepath: string;

@@ -9,13 +9,13 @@ import {
   WACIMessageType,
 } from '../../types';
 import { createUUID } from '../../utils';
-import { callbacks } from '../../callbacks';
 import { ProblemReportMessage } from '../../types/problem-report';
 
 @RegisterHandler(Actor.Holder, WACIMessageType.IssueCredential)
 export class IssueCredentialHandler implements WACIMessageHandler {
   async handle(
     messageThread: WACIMessage[],
+    callbacks: any,
   ): Promise<WACIMessageHandlerResponse> {
     const message = messageThread[messageThread.length - 1];
 

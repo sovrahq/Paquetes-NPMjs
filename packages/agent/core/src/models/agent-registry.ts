@@ -1,11 +1,11 @@
-import { IJWK, IKMS, Suite } from "@quarkid/kms-core";
-import { Did, ModenaUniversalRegistry } from "@quarkid/did-registry";
-import { Purpose, Service } from "@quarkid/did-core";
-import { ISigner, ModenaSdkConfig } from "@quarkid/modena-sdk";
+import { IJWK, IKMS, Suite } from "@sovra/kms-core";
+import { Did, ModenaUniversalRegistry } from "@sovra/did-registry";
+import { Purpose, Service } from "@sovra/did-core";
+import { ISigner, ModenaSdkConfig } from "@sovra/modena-sdk";
 import { AgentModenaUniversalResolver } from "./agent-resolver";
-import { DIDUniversalResolver } from "@quarkid/did-resolver";
+import { DIDUniversalResolver } from "@sovra/did-resolver";
 import { DID } from "./did";
-import { DIDDocumentMetadata } from "@quarkid/modena-sdk";
+import { DIDDocumentMetadata } from "@sovra/modena-sdk";
 
 export abstract class IAgentRegistry {
     protected kms: IKMS;
@@ -46,6 +46,14 @@ export interface CreateDIDRequest {
     services?: Service[];
 }
 
+export interface KeyToImport {
+    id: string;
+    vmKey: VMKey;
+    publicKeyJWK: IJWK;
+    secrets: any;
+    skipKmsImport?: boolean;
+}
+
 export interface UpdateDIDRequest {
     did: DID,
     updatePublicKey: IJWK,
@@ -61,7 +69,10 @@ export interface UpdateDIDRequest {
         type: string;
         publicKeyJwk: IJWK;
         purpose: Purpose[];
+        vmKey?: VMKey;
+        skipKmsImport?: boolean;
     }[];
+    keysToImport?: KeyToImport[];
     idsOfVerificationMethodsToRemove?: string[];
     servicesToAdd?: ServiceDefinition[],
     idsOfServiceToRemove?: string[],
@@ -78,6 +89,8 @@ export interface CreateDIDSidetreeResponse extends CreateDIDResponse {
 export interface KeyDefinition {
     id: string,
     vmKey: VMKey,
+    skipKmsImport?: boolean,
+    publicKeyJWK?: IJWK,
 }
 
 export enum VMKey {
@@ -85,6 +98,7 @@ export enum VMKey {
     DIDComm,
     VC,
     RSA,
+    Ed25519,
 }
 
 export interface ServiceDefinition {

@@ -1,5 +1,5 @@
 
-import { DIDCommMessage } from "@quarkid/did-core";
+import { DIDCommMessage } from "@sovra/did-core";
 import { MessageTypes , ContentType , ACKStatus , PlsACKOnValues } from "./enums";
 
 

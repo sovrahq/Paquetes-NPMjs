@@ -1,4 +1,4 @@
-import { VerifiableCredential } from "@quarkid/vc-core";
+import { VerifiableCredential } from "@sovra/vc-core";
 import { DID } from "./did";
 
 export interface IVCStorage {

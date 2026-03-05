@@ -1,5 +1,5 @@
-import { BaseConverter, IVCJsonLDKeyPair, Suite, suiteDecorator } from "@quarkid/kms-core";
-import { JsonLDSuite } from "@quarkid/kms-suite-jsonld";
+import { BaseConverter, IVCJsonLDKeyPair, Suite, suiteDecorator } from "@sovra/kms-core";
+import { JsonLDSuite } from "@sovra/kms-suite-jsonld";
 // import cryptold from "crypto-ld";
 const jsigs = require('jsonld-signatures');
 const rsa = require('js-crypto-rsa'); // for npm

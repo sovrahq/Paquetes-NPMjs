@@ -1,7 +1,7 @@
-import { Agent, DID, IAgentPlugin, IAgentPluginMessage, IAgentPluginResponse } from "@quarkid/agent";
-import { DIDCommMessage } from "@quarkid/ami-core";
-import { AMISDK, IEncoder, IStorage, MessageStorage } from "@quarkid/ami-sdk";
-import { Did } from "@quarkid/did-registry";
+import { Agent, DID, IAgentPlugin, IAgentPluginMessage, IAgentPluginResponse } from "@sovra/agent";
+import { DIDCommMessage } from "@sovra/ami-core";
+import { AMISDK, IEncoder, IStorage, MessageStorage } from "@sovra/ami-sdk";
+import { Did } from "@sovra/did-registry";
 
 
 

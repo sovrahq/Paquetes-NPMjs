@@ -15,13 +15,13 @@ import {
   createUUID,
   verifyPresentation,
 } from '../../utils';
-import { callbacks } from '../../callbacks';
 import { ProblemReportMessage } from '../../types/problem-report';
 
 @RegisterHandler(Actor.Issuer, WACIMessageType.RequestCredential)
 export class RequestCredentialHandler implements WACIMessageHandler {
   async handle(
     messageThread: WACIMessage[],
+    callbacks: any,
   ): Promise<WACIMessageHandlerResponse | void> {
     const messageToProcess = messageThread[messageThread.length - 1];
     const holderDID = messageToProcess.from;
@@ -31,85 +31,60 @@ export class RequestCredentialHandler implements WACIMessageHandler {
       (message) => message.type === WACIMessageType.OfferCredential,
     );
 
-    const manifests: CredentialManifest[] =
-      offerCredentialMessage.attachments.filter(
-        (attachment) => !isNil(attachment?.data?.json?.credential_manifest),
-      );
-
-    const applicationsToCheck = manifests
-      .filter(
-        (manifest) =>
-          !isNil(
-            manifest?.data?.json?.credential_manifest?.presentation_definition,
-          ),
-      )
-      .map((manifest) => ({
-        presentationDefinition:
-          manifest.data.json.credential_manifest.presentation_definition,
-        application: messageToProcess.attachments.find(
-          (attachment) =>
-            attachment.data.json.credential_application.manifest_id ===
-            manifest.data.json.credential_manifest.id,
-        ),
-      }));
-
-    const verificationResultCallback = callbacks[Actor.Issuer]?.credentialVerificationResult;
-    let vcs = [];
-
-    if (
-      applicationsToCheck.every((applicationToCheck) =>
-        !isNil(applicationToCheck.application),
-      )
-    ) {
-      for await (const applicationToCheck of applicationsToCheck) {
-        const verify = await verifyPresentation(
-          applicationToCheck.presentationDefinition,
-          applicationToCheck.application,
-          callbacks[Actor.Issuer].verifyCredential,
+    try {
+      const manifests: CredentialManifest[] =
+        offerCredentialMessage.attachments.filter(
+          (attachment) => !isNil(attachment?.data?.json?.credential_manifest),
         );
-        let result = verify.result;
 
-        for (let vc of verify.vcs) {
-          vcs.push(vc);
-        }
+      const applicationsToCheck = manifests
+        .filter(
+          (manifest) =>
+            !isNil(
+              manifest?.data?.json?.credential_manifest?.presentation_definition,
+            ),
+        )
+        .map((manifest) => ({
+          presentationDefinition:
+            manifest.data.json.credential_manifest.presentation_definition,
+          application: messageToProcess.attachments.find(
+            (attachment) =>
+              attachment.data.json.credential_application.manifest_id ===
+              manifest.data.json.credential_manifest.id,
+          ),
+        }));
 
-        if (!result) {
-          if (verificationResultCallback) {
-            verificationResultCallback({
-              result: verify.result,
-              error: verify.erorrs,
-              thid: messageToProcess.thid,
-              vcs: verify.vcs,
-              message: messageToProcess,
-            })
+      const verificationResultCallback = callbacks[Actor.Issuer]?.credentialVerificationResult;
+      let vcs = [];
+
+      if (
+        applicationsToCheck.every((applicationToCheck) =>
+          !isNil(applicationToCheck.application),
+        )
+      ) {
+        for await (const applicationToCheck of applicationsToCheck) {
+          const verify = await verifyPresentation(
+            applicationToCheck.presentationDefinition,
+            applicationToCheck.application,
+            callbacks[Actor.Issuer].verifyCredential,
+          );
+          let result = verify.result;
+
+          for (let vc of verify.vcs) {
+            vcs.push(vc);
           }
 
-          return {
-            responseType: WACIMessageResponseType.ReplyThread,
-            message: {
-              type: WACIMessageType.ProblemReport,
-              id: createUUID(),
-              thid: messageToProcess.id,
-              from: issuerDID,
-              to: [holderDID],
-              body: problemReport.presentProofMessage(
-                verify.error.name,
-                verify.error.description,
-              ),
-            },
-          };
-        }
+          if (!result) {
+            if (verificationResultCallback) {
+              verificationResultCallback({
+                result: verify.result,
+                error: verify.erorrs,
+                thid: messageToProcess.thid,
+                vcs: verify.vcs,
+                message: messageToProcess,
+              })
+            }
 
-        if (applicationsToCheck.length) {
-          const challengeToCheck = extractExpectedChallenge(
-            offerCredentialMessage,
-          );
-
-          const presentation = messageToProcess.attachments[0].data.json;
-          const verifyPresentationResult = await callbacks[
-            Actor.Issuer
-          ].verifyPresentation({ presentation, challenge: challengeToCheck, message: messageToProcess, holderDid: holderDID });
-          if (!verifyPresentationResult.result) {
             return {
               responseType: WACIMessageResponseType.ReplyThread,
               message: {
@@ -119,62 +94,111 @@ export class RequestCredentialHandler implements WACIMessageHandler {
                 from: issuerDID,
                 to: [holderDID],
                 body: problemReport.presentProofMessage(
-                  verifyPresentationResult.error.name,
-                  verifyPresentationResult.error.description,
+                  verify.error.name,
+                  verify.error.description,
                 ),
               },
             };
           }
 
+          if (applicationsToCheck.length) {
+            const challengeToCheck = extractExpectedChallenge(
+              offerCredentialMessage,
+            );
+
+            const presentation = messageToProcess.attachments[0].data.json;
+            const verifyPresentationResult = await callbacks[
+              Actor.Issuer
+            ].verifyPresentation({ presentation, challenge: challengeToCheck, message: messageToProcess, holderDid: holderDID });
+            if (!verifyPresentationResult.result) {
+              return {
+                responseType: WACIMessageResponseType.ReplyThread,
+                message: {
+                  type: WACIMessageType.ProblemReport,
+                  id: createUUID(),
+                  thid: messageToProcess.id,
+                  from: issuerDID,
+                  to: [holderDID],
+                  body: problemReport.presentProofMessage(
+                    verifyPresentationResult.error.name,
+                    verifyPresentationResult.error.description,
+                  ),
+                },
+              };
+            }
+
+          }
+        }
+
+        if (verificationResultCallback) {
+          verificationResultCallback({
+            result: true,
+            error: null,
+            thid: messageToProcess.thid,
+            vcs: vcs,
+            message: messageToProcess,
+          })
         }
       }
 
-      if (verificationResultCallback) {
-        verificationResultCallback({
-          result: true,
-          error: null,
+
+      const fulfillments: CredentialFulfillment[] =
+        offerCredentialMessage.attachments.filter(
+          (attachment) =>
+            !isNil(attachment?.data?.json?.credential_fulfillment),
+        );
+
+      let attachments = [];
+
+      for (let f of fulfillments) {
+        const attachment = {
+          id: createUUID(),
+          media_type: 'application/json',
+          format: 'dif/credential-manifest/fulfillment@v1.0',
+          data: {
+            json: {
+              ...f.data.json,
+            },
+          },
+        };
+        attachment.data.json.verifiableCredential = [];
+
+        for (let vc of f.data.json.verifiableCredential) {
+          attachment.data.json.verifiableCredential.push(await callbacks[Actor.Issuer].signCredential({ vc: vc, message: messageToProcess }));
+        }
+
+        attachments.push(attachment);
+      }
+
+      return {
+        responseType: WACIMessageResponseType.ReplyThread,
+        message: {
+          type: WACIMessageType.IssueCredential,
+          id: createUUID(),
           thid: messageToProcess.thid,
-          vcs: vcs,
-          message: messageToProcess,
-        })
+          from: issuerDID,
+          to: [holderDID],
+          body: {},
+          attachments: attachments,
+        },
+      };
+    }
+    catch (ex) {
+      return {
+        responseType: WACIMessageResponseType.ReplyThread,
+        message: {
+          type: WACIMessageType.ProblemReport,
+          id: createUUID(),
+          thid: messageToProcess.id,
+          from: issuerDID,
+          to: [holderDID],
+          body: problemReport.presentProofMessage(
+            'unexpected-error',
+            'Unexpected error: ' + ex?.message,
+          )
+        },
       }
     }
-
-
-    const fulfillments: CredentialFulfillment[] =
-      offerCredentialMessage.attachments.filter(
-        (attachment) =>
-          !isNil(attachment?.data?.json?.credential_fulfillment),
-      );
-
-    return {
-      responseType: WACIMessageResponseType.ReplyThread,
-      message: {
-        type: WACIMessageType.IssueCredential,
-        id: createUUID(),
-        thid: messageToProcess.thid,
-        from: issuerDID,
-        to: [holderDID],
-        body: {},
-        attachments: await Promise.all(
-          fulfillments.map(async ({ data: { json } }) => ({
-            id: createUUID(),
-            media_type: 'application/json',
-            format: 'dif/credential-manifest/fulfillment@v1.0',
-            data: {
-              json: {
-                ...json,
-                verifiableCredential: await Promise.all(
-                  json.verifiableCredential.map((vc) => {
-                    return callbacks[Actor.Issuer].signCredential({ vc: vc, message: messageToProcess })
-                  }),
-                ),
-              },
-            },
-          })),
-        ),
-      },
-    };
   }
 }
 

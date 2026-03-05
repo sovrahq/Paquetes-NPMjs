@@ -1,5 +1,5 @@
-import { DIDCommMessage, DIDDocumentUtils, VerificationMethodJwk, VerificationMethodTypes } from "@quarkid/did-core";
-import { Base, BaseConverter, DIDCommMessagePacking, DIDCommPackedMessage, IDIDCommMessage, IJWK, IKMS, Suite } from "@quarkid/kms-core";
+import { DIDCommMessage, DIDDocumentUtils, VerificationMethodJwk, VerificationMethodTypes } from "@sovra/did-core";
+import { Base, BaseConverter, DIDCommMessagePacking, DIDCommPackedMessage, IDIDCommMessage, IJWK, IKMS, Suite } from "@sovra/kms-core";
 import { AgentIdentity } from "../models/agent-identity";
 import { IAgentRegistry } from "../models/agent-registry";
 import { IAgentResolver } from "../models/agent-resolver";
@@ -48,7 +48,13 @@ export class Messaging {
 
         const myKeyAgreements = DIDDocumentUtils.getVerificationMethodsByType(myDIDDocument, VerificationMethodTypes.X25519KeyAgreementKey2019) as VerificationMethodJwk[];
         const didCommV2Keys = await this.kms.getPublicKeysBySuiteType(Suite.DIDCommV2);
-        const keyToSign = myKeyAgreements.find(x => didCommV2Keys.some(y => y.x == x.publicKeyJwk.x && y.y == x.publicKeyJwk.y));
+        const keyToSign = myKeyAgreements.find(x => didCommV2Keys.some(y => {
+            // OKP keys (Ed25519/X25519) only have x, no y
+            if (x.publicKeyJwk.kty === 'OKP' || !x.publicKeyJwk.y) {
+                return y.x == x.publicKeyJwk.x;
+            }
+            return y.x == x.publicKeyJwk.x && y.y == x.publicKeyJwk.y;
+        }));
 
 
         const receiptVerificationMethods = await Promise.all(params.to.map(async did => {

@@ -1,6 +1,6 @@
 
-import {  AMISDK, StandardMessageEvent , ContentType} from "@quarkid/ami-sdk";
-import {DID , Agent} from "@quarkid/agent";
+import {  AMISDK, StandardMessageEvent , ContentType} from "@sovra/ami-sdk";
+import {DID , Agent} from "@sovra/agent";
 import * as fs from "fs";
 export async function onStandardMessageHandler(agent: Agent , sdk: AMISDK , data?: StandardMessageEvent){
     if(!data)

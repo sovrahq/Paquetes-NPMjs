@@ -1,6 +1,6 @@
-import { DID, VerifiableCredential, WACICredentialOfferSucceded, WACIProtocol } from "@quarkid/agent";
+import { DID, VerifiableCredential, WACICredentialOfferSucceded, WACIProtocol } from "@sovra/agent";
 import { MemoryStorage } from "../mock/memory-storage";
-import { IStorage } from "@quarkid/agent/dist/models/agent-storage";
+import { IStorage } from "@sovra/agent/dist/models/agent-storage";
 
 export function getIssuerWACIProtocol(storage?: IStorage) {
     return new WACIProtocol({

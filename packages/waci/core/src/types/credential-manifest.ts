@@ -160,6 +160,7 @@ export type InputDescriptor = {
         const?: any;
       };
     }[];
+    limit_disclosure?: 'required' | 'preferred';
   };
   name?: string;
   purpose?: string;

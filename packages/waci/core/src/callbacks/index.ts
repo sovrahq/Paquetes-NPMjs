@@ -18,7 +18,7 @@ export type InputCallbacks = {
     // Issuance flow
     getCredentialApplication: Callback<
       { manifest: CredentialManifest; fulfillment: CredentialFulfillment, message?: WACIMessage },
-      { credentialsToPresent: any[]; presentationProofTypes: string[] }
+      { credentialsToPresent: any[], presentationProofTypes: string[] } | CredentialPresentationResponse
     >;
     // Verification flow
     getCredentialPresentation: Callback<
@@ -27,7 +27,7 @@ export type InputCallbacks = {
         frame?: PresentationDefinitionFrame,
         message?: WACIMessage
       },
-      { credentialsToPresent: any[] }
+      { credentialsToPresent: any[] } | CredentialPresentationResponse
     >;
     signPresentation: Callback<{
       contentToSign: any;
@@ -70,4 +70,6 @@ export type InputCallbacks = {
   };
 };
 
-export const callbacks: InputCallbacks = {} as any;
+export enum CredentialPresentationResponse {
+  AsyncProcess
+}

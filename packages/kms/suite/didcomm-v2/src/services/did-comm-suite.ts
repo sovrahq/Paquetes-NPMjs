@@ -1,5 +1,5 @@
 import { arrayify, hexlify } from "@ethersproject/bytes";
-import { IDidCommKeyPair, IDIDCommV2Suite, Suite, suiteDecorator, DIDCommMessageMediaType, DIDCommMessagePacking, IPackedDIDCommMessage, _DIDCommPlainMessage, _DIDCommEncryptedMessage, BaseConverter, Base, } from "@quarkid/kms-core";
+import { IDidCommKeyPair, IDIDCommV2Suite, Suite, suiteDecorator, DIDCommMessageMediaType, DIDCommMessagePacking, IPackedDIDCommMessage, _DIDCommPlainMessage, _DIDCommEncryptedMessage, BaseConverter, Base, } from "@sovra/kms-core";
 // import { crypto_sign_keypair, sodium.from_hex } from 'wrappers';
 const _sodium = require("libsodium-wrappers");
 import {
@@ -35,7 +35,7 @@ import {
 import { ParsedDID } from "../models/parsed-did";
 import { IDIDCommMessage, IUnpackedDIDCommMessage } from "../models/didcomm-message-media-type";
 import { _DIDCommSignedMessage, _FlattenedJWS, _GenericJWS } from "../models/didcomm-signed-message";
-import { DIDDocument, VerificationMethodJwk } from "@quarkid/did-core";
+import { DIDDocument, VerificationMethodJwk } from "@sovra/did-core";
 
 const PCT_ENCODED = '(?:%[0-9a-fA-F]{2})'
 const ID_CHAR = `(?:[a-zA-Z0-9._-]|${PCT_ENCODED})`
@@ -95,6 +95,7 @@ export class DIDCommSuite implements IDIDCommV2Suite {
         toKeys: {
             verificationMethodId: string;
             publicKeyHex: string;
+            publicKeyCrv?: string;
         }[],
         message: IDIDCommMessage;
         packing: DIDCommMessagePacking;
@@ -196,17 +197,20 @@ export class DIDCommSuite implements IDIDCommV2Suite {
         interface IRecipient {
             kid: string
             publicKeyBytes: Uint8Array
+            publicKeyCrv?: string
         }
 
         let recipients: IRecipient[] = []
 
         async function computeRecipients(receiptKeys: {
             verificationMethodId: string,
-            toPublicKeyHex: string
+            toPublicKeyHex: string,
+            publicKeyCrv?: string,
         }[]): Promise<IRecipient[]> {
             const tempRecipients = receiptKeys.map((pbk) => ({
                 kid: pbk.verificationMethodId,
-                publicKeyBytes: u8a.fromString(pbk.toPublicKeyHex, "base16")
+                publicKeyBytes: u8a.fromString(pbk.toPublicKeyHex, "base16"),
+                publicKeyCrv: pbk.publicKeyCrv,
             }));
 
             if (tempRecipients.length === 0) {
@@ -220,7 +224,8 @@ export class DIDCommSuite implements IDIDCommV2Suite {
         recipients.push(...(await computeRecipients(params.toKeys.map(x =>
         ({
             toPublicKeyHex: x.publicKeyHex,
-            verificationMethodId: x.verificationMethodId
+            verificationMethodId: x.verificationMethodId,
+            publicKeyCrv: x.publicKeyCrv,
         })))));
 
         // add bcc recipients (optional)
@@ -232,11 +237,15 @@ export class DIDCommSuite implements IDIDCommV2Suite {
         // 3. create Encrypter for each recipient
         const encrypters: Encrypter[] = recipients
             .map((recipient) => {
+                // Skip double-conversion if key is already X25519
+                const recipientX25519Key = recipient.publicKeyCrv === 'X25519'
+                    ? recipient.publicKeyBytes
+                    : convertPublicKeyToX25519(recipient.publicKeyBytes);
                 if (params.packing === 'authcrypt') {
                     const signerpk = arrayify(this.keyPair.privateKey, { allowMissingPrefix: true });
-                    return createAuthEncrypter(convertPublicKeyToX25519(recipient.publicKeyBytes), convertSecretKeyToX25519(signerpk), { kid: recipient.kid })
+                    return createAuthEncrypter(recipientX25519Key, convertSecretKeyToX25519(signerpk), { kid: recipient.kid })
                 } else {
-                    return createAnonEncrypter(convertPublicKeyToX25519(recipient.publicKeyBytes), { kid: recipient.kid })
+                    return createAnonEncrypter(recipientX25519Key, { kid: recipient.kid })
                 }
             });
 
@@ -281,7 +290,11 @@ export class DIDCommSuite implements IDIDCommV2Suite {
         if (senderPbk && jwe.recipients[0].header.alg.includes('ECDH-1PU')) {
             const privateKeyBytes = arrayify(this.keyPair.privateKey, { allowMissingPrefix: true });
             const senderKeyBytes = u8a.fromString(senderPbk.publicKeyHex.replace("0x", ""), "base16");
-            decrypter = createAuthDecrypter(convertSecretKeyToX25519(privateKeyBytes), convertPublicKeyToX25519(senderKeyBytes))
+            // Skip double-conversion if sender key is already X25519
+            const senderX25519Key = senderPbk.publicKeyType === 'X25519'
+                ? senderKeyBytes
+                : convertPublicKeyToX25519(senderKeyBytes);
+            decrypter = createAuthDecrypter(convertSecretKeyToX25519(privateKeyBytes), senderX25519Key)
             packing = 'authcrypt'
         } else {
             const privateKeyBytes = arrayify(this.keyPair.privateKey, { allowMissingPrefix: true });

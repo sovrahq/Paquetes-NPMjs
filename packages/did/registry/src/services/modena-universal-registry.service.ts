@@ -1,6 +1,6 @@
-import { Service } from "@quarkid/did-core";
-import { IJWK } from "@quarkid/kms-core";
-import { DIDDocumentMetadata, ModenaRequest, ModenaSdkConfig } from "@quarkid/modena-sdk";
+import { Service } from "@sovra/did-core";
+import { IJWK } from "@sovra/kms-core";
+import { DIDDocumentMetadata, ModenaRequest, ModenaSdkConfig } from "@sovra/modena-sdk";
 import fetch from "node-fetch";
 import { CreateDIDResponse } from "../models/create-did.response";
 import { VerificationMethod } from "../models/interfaces";
@@ -101,7 +101,12 @@ export class ModenaUniversalRegistry extends ModenaRegistryBase<ModenaUniversalP
             },
             idsOfPublicKeysToRemove: params.idsOfVerificationMethodsToRemove,
             idsOfServicesToRemove: params.idsOfServiceToRemove,
-            publicKeysToAdd: params.verificationMethodsToAdd,
+            publicKeysToAdd: params.verificationMethodsToAdd?.map(x => ({
+                id: x.id,
+                publicKeyJwk: x.publicKeyJwk,
+                type: x.type,
+                purposes: x.purpose.map(y => y.name)
+            })),
             servicesToAdd: params.servicesToAdd
         });
 
@@ -128,8 +133,13 @@ export class ModenaUniversalRegistry extends ModenaRegistryBase<ModenaUniversalP
         const response = await fetch(url, options);
 
         if (response.status !== 200 && response.status !== 201) {
-            const msg = await response.json();
-            throw new Error(`DID update is not ok: ${msg}`);
+            let msg: any;
+            try {
+                msg = await response.json();
+            } catch {
+                msg = await response.text();
+            }
+            throw new Error(`DID update is not ok (${response.status}): ${JSON.stringify(msg)}`);
         }
     }
 }

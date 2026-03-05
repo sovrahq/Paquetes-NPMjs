@@ -14,13 +14,13 @@ import {
   createUUID,
   verifyPresentation,
 } from '../../utils';
-import { callbacks } from '../../callbacks';
 import { ProblemReportMessage } from '../../types/problem-report';
 
 @RegisterHandler(Actor.Verifier, WACIMessageType.PresentProof)
 export class PresentProofHandler implements WACIMessageHandler {
   async handle(
     messageThread: WACIMessage[],
+    callbacks: any,
   ): Promise<WACIMessageHandlerResponse> {
     const messageToProcess = messageThread[messageThread.length - 1];
 
@@ -82,7 +82,7 @@ export class PresentProofHandler implements WACIMessageHandler {
         presentationDefinition: request.data.json.presentation_definition,
         submission: messageToProcess.attachments.find(
           (attachment) =>
-            attachment.data.json.presentation_submission.definition_id ===
+            attachment?.data?.json?.presentation_submission?.definition_id ===
             request.data.json.presentation_definition.id,
         ),
       }));
@@ -116,7 +116,7 @@ export class PresentProofHandler implements WACIMessageHandler {
           if (verificationResultCallback) {
             verificationResultCallback({
               result: verify.result,
-              error: verify.erorrs,
+              error: verify.errors,
               thid: messageToProcess.thid,
               vcs: verify.vcs,
               message: messageToProcess,

@@ -1,7 +1,7 @@
-import { CreateDIDRequest, CreateDIDResponse, DID, IAgentRegistry, IAgentResolver, UpdateDIDRequest } from "@quarkid/agent";
-import { DIDDocument } from "@quarkid/did-core";
-import { ModenaResponse } from "@quarkid/did-resolver";
-import { IKMS } from "@quarkid/kms-core";
+import { CreateDIDRequest, CreateDIDResponse, DID, IAgentRegistry, IAgentResolver, UpdateDIDRequest } from "@sovra/agent";
+import { DIDDocument } from "@sovra/did-core";
+import { ModenaResponse } from "@sovra/did-resolver";
+import { IKMS } from "@sovra/kms-core";
 
 export class AgentUniversalResolverMock implements IAgentResolver {
 

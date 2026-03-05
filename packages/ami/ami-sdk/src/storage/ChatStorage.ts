@@ -1,6 +1,6 @@
 import { ChatMessage } from "../chat-message/chat-message";
 import { IChat, IChatStorage } from "./IChatStorage";
-import { AMICore, IMessageThreadStorage, Message, MessageTypes } from "@quarkid/ami-core";
+import { AMICore, IMessageThreadStorage, Message, MessageTypes } from "@sovra/ami-core";
 import { IStorage } from "./storage";
 import { parseChatMessage } from "../chat-message/utils";
 

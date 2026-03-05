@@ -1,5 +1,5 @@
-// import { VerifiableCredential } from "@quarkid/vc-core";
-import { VerificationMethodTypes } from '@quarkid/did-core';
+// import { VerifiableCredential } from "@sovra/vc-core";
+import { VerificationMethodTypes } from '@sovra/did-core';
 import {
   AgentModenaUniversalRegistry,
   AgentModenaUniversalResolver,

@@ -1,4 +1,4 @@
-import { ACKStatus, AckMessage, IMessageThreadStorage, Message, MessageTypes, PlsACKOnValues } from "@quarkid/ami-core";
+import { ACKStatus, AckMessage, IMessageThreadStorage, Message, MessageTypes, PlsACKOnValues } from "@sovra/ami-core";
 import { ChatMessage, IncomingChatMessageStatus,  OutgoingChatMessageStatus } from "./chat-message";
 
 function getOutgoingChatMessageStatus(thread: Message[] , owner: string): OutgoingChatMessageStatus{

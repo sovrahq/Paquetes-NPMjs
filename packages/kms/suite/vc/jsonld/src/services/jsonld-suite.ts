@@ -1,5 +1,5 @@
-import { IVCJsonLDKeyPair, IVCSuite } from "@quarkid/kms-core";
-import { AuthenticationPurpose, DIDDocument, Purpose, VerificationMethod } from "@quarkid/did-core";
+import { IVCJsonLDKeyPair, IVCSuite } from "@sovra/kms-core";
+import { AuthenticationPurpose, DIDDocument, Purpose, VerificationMethod } from "@sovra/did-core";
 const jsonld = require("jsonld-signatures");
 const documentLoaders = require("jsonld");
 const axios = require("axios");
@@ -8,11 +8,19 @@ import { isArray } from "util";
 export abstract class JsonLDSuite implements IVCSuite {
     protected didDocumentResolver: (did: string) => Promise<DIDDocument>;
 
-    contextDictionary =
-        [
-            { key: "https://www.w3.org/2018/credentials/v1", value: "https://extrimian.blob.core.windows.net/rskec/credentialsv1.jsonld" },
-            { key: "https://w3id.org/security/bbs/v1", value: "https://extrimian.blob.core.windows.net/rskec/securitybbsv1.jsonld" },
-        ];
+    contextDictionary = [
+        // VC 1.0 contexts
+        { key: "https://www.w3.org/2018/credentials/v1", value: "https://www.w3.org/2018/credentials/v1" },
+        { key: "https://w3id.org/security/bbs/v1", value: "https://w3id.org/security/bbs/v1" },
+        // VC 2.0 contexts
+        { key: "https://www.w3.org/ns/credentials/v2", value: "https://www.w3.org/ns/credentials/v2" },
+        { key: "https://www.w3.org/ns/credentials/status/v1", value: "https://www.w3.org/ns/credentials/status/v1" },
+        // Ed25519 signature contexts
+        { key: "https://w3id.org/security/suites/ed25519-2018/v1", value: "https://w3id.org/security/suites/ed25519-2018/v1" },
+        { key: "https://w3id.org/security/suites/ed25519-2020/v1", value: "https://w3id.org/security/suites/ed25519-2020/v1" },
+        // JWS 2020 context
+        { key: "https://w3id.org/security/suites/jws-2020/v1", value: "https://w3id.org/security/suites/jws-2020/v1" },
+    ];
 
 
     private cache = new Map<string, any>();

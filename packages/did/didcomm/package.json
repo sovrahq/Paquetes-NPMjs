@@ -1,7 +1,7 @@
 {
   "author": "QuarkID",
   "license": "Apache-2.0",
-  "name": "@quarkid/did-comm",
+  "name": "@sovra/did-comm",
   "version": "1.1.2",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -21,11 +21,15 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@quarkid/core": "1.0.7",
-    "@quarkid/did-core": "1.1.2",
-    "@quarkid/did-resolver": "1.4.6",
-    "@quarkid/kms-client": "1.4.0-4",
-    "@quarkid/kms-core": "1.4.0-4",
-    "@quarkid/vc-core": "1.1.0-2"
-  }
+    "@sovra/core": "1.0.7",
+    "@sovra/did-core": "1.1.2",
+    "@sovra/did-resolver": "1.4.6",
+    "@sovra/kms-client": "1.4.0-4",
+    "@sovra/kms-core": "1.4.0-4",
+    "@sovra/vc-core": "1.1.0-2"
+  ,
+  "publishConfig": { "access": "public" }
+}
+,
+  "publishConfig": { "access": "public" }
 }

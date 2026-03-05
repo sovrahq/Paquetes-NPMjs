@@ -1,4 +1,4 @@
-import { DIDDocument } from "@quarkid/did-core";
+import { DIDDocument } from "@sovra/did-core";
 
 export class DIDDocumentMetadata {
     method: {

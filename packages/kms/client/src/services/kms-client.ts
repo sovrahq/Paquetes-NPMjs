@@ -4,7 +4,7 @@ import {
   DIDDocumentUtils,
   Purpose,
   VerificationMethodJwk
-} from "@quarkid/did-core";
+} from "@sovra/did-core";
 import {
   IES256kSuite,
   IVCSuite,
@@ -27,17 +27,17 @@ import {
   DIDCommMessagePacking,
   SelectiveDisclosureZKPSuite,
   DIDCommPackedMessage,
-} from "@quarkid/kms-core";
-import { VerifiableCredential } from "@quarkid/vc-core";
-import "@quarkid/kms-suite-didcomm";
-import "@quarkid/kms-suite-didcomm-v2";
-import "@quarkid/kms-suite-es256k";
-import "@quarkid/kms-suite-rsa-signature-2018";
-import { DIDCommSuite as DIDCommSuiteV1 } from "@quarkid/kms-suite-didcomm";
-import { DIDCommSuite } from "@quarkid/kms-suite-didcomm-v2";
-import { BbsBls2020Suite } from "@quarkid/kms-suite-bbsbls2020";
-import { RSASignature2018Suite } from "@quarkid/kms-suite-rsa-signature-2018";
-import { ES256kSuite } from "@quarkid/kms-suite-es256k";
+} from "@sovra/kms-core";
+import { VerifiableCredential } from "@sovra/vc-core";
+import "@sovra/kms-suite-didcomm";
+import "@sovra/kms-suite-didcomm-v2";
+import "@sovra/kms-suite-es256k";
+import "@sovra/kms-suite-rsa-signature-2018";
+import { DIDCommSuite as DIDCommSuiteV1 } from "@sovra/kms-suite-didcomm";
+import { DIDCommSuite } from "@sovra/kms-suite-didcomm-v2";
+import { BbsBls2020Suite } from "@sovra/kms-suite-bbsbls2020";
+import { RSASignature2018Suite } from "@sovra/kms-suite-rsa-signature-2018";
+import { ES256kSuite } from "@sovra/kms-suite-es256k";
 
 export class KMSClient implements IKMS {
   suites: Map<Suite, new (...args: never[]) => any> = new Map();
@@ -56,7 +56,7 @@ export class KMSClient implements IKMS {
     this.suites.set(Suite.RsaSignature2018, RSASignature2018Suite)
 
     if (!config.mobile) {
-      import("@quarkid/kms-suite-bbsbls2020");
+      import("@sovra/kms-suite-bbsbls2020");
       this.suites.set(Suite.Bbsbls2020, BbsBls2020Suite)
     }
     if (!config.didResolver)
@@ -94,7 +94,14 @@ export class KMSClient implements IKMS {
       jwk = BaseConverter.convert(secrets.publicKey, Base.Hex, Base.JWK, secrets.keyType);
     } else if (suite == Suite.DIDCommV2) {
       secrets = await suiteInstance.create();
-      jwk = BaseConverter.convert(secrets.publicKey, Base.Hex, Base.JWK, secrets.keyType);
+      // Convert Ed25519 public key to X25519 for DIDComm key agreement
+      const ed25519 = require('@stablelib/ed25519');
+      const rawHex = secrets.publicKey.replace('0x', '');
+      const edPub = new Uint8Array(Buffer.from(rawHex, 'hex'));
+      const x25519Pub = ed25519.convertPublicKeyToX25519(edPub);
+      const x25519B64 = Buffer.from(x25519Pub).toString('base64')
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      jwk = { kty: 'OKP', crv: 'X25519', x: x25519B64 } as any;
     } else {
       throw new Error("Unsupported Suite");
     }
@@ -287,7 +294,8 @@ export class KMSClient implements IKMS {
             vm.publicKeyJwk,
             Base.JWK,
             Base.Hex
-          )
+          ),
+          publicKeyCrv: vm.publicKeyJwk && (vm.publicKeyJwk as any).crv,
         }
       }
     }));

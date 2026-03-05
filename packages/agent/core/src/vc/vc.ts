@@ -1,9 +1,9 @@
-import { CredentialDisplay, IssuerData, VerifiableCredentialWithInfo } from "@quarkid/agent/src/vc/protocols/waci-protocol";
-import { AssertionMethodPurpose, AuthenticationPurpose, Purpose, VerificationMethodJwk } from "@quarkid/did-core";
-import { Base, BaseConverter, IJWK, IKMS, Suite, getTypeBySuite } from "@quarkid/kms-core";
-import { VerifiableCredential } from "@quarkid/vc-core";
-import { VCSuiteError, VCVerifierService } from "@quarkid/vc-verifier";
-import { CredentialManifestStyles, PresentationDefinitionFrame } from "@quarkid/waci";
+import { CredentialDisplay, IssuerData, VerifiableCredentialWithInfo } from "@sovra/agent/src/vc/protocols/waci-protocol";
+import { AssertionMethodPurpose, AuthenticationPurpose, Purpose, VerificationMethodJwk } from "@sovra/did-core";
+import { Base, BaseConverter, IJWK, IKMS, Suite, getTypeBySuite } from "@sovra/kms-core";
+import { VerifiableCredential } from "@sovra/vc-core";
+import { VCSuiteError, VCVerifierService } from "@sovra/vc-verifier";
+import { CredentialManifestStyles, PresentationDefinitionFrame } from "@sovra/waci";
 import { encode, decode } from "base-64";
 import { VCProtocolNotFoundError } from "../exceptions/vc-protocol-not-found";
 import { Messaging } from "../messaging/messaging";
@@ -322,12 +322,13 @@ export class VC {
     async createInvitationMessage(args: {
         path?: string
         flow: CredentialFlow,
-        did?: DID
+        did?: DID,
+        didcommVersion?: string,
     }, outParam?: { invitationId: string }) {
         if (!args.path) args.path = "didcomm";
 
         const oobMessage = await this.vcProtocols[0].createInvitationMessage(args.flow,
-            args.did || this.identity.getOperationalDID())
+            args.did || this.identity.getOperationalDID(), args.didcommVersion)
 
         const oob = encode(JSON.stringify(oobMessage));
 

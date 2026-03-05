@@ -5,11 +5,10 @@ import {
   WACIMessageType,
   Actor,
 } from '../../types';
-import { callbacks } from '../../callbacks';
 
 @RegisterHandler(Actor.Issuer, WACIMessageType.IssuanceAck)
 export class IssuanceAckMessageHandler implements WACIMessageHandler {
-  async handle(messageThread: WACIMessage[]): Promise<void> {
+  async handle(messageThread: WACIMessage[], callbacks: any): Promise<void> {
     const message = messageThread[messageThread.length - 1];
     await callbacks[Actor.Issuer].handleIssuanceAck({
       status: message.body.status,

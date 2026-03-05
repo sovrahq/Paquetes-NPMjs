@@ -17,7 +17,7 @@ import ModenaUpdateRequestModel from './models/ModenaUpdateRequestModel';
 import ModenaServiceModel from './models/ModenaServiceModel';
 import ModenaPublicKeyModel from './models/ModenaPublicKeyModel';
 import ModenaDeactivateRequestModel from './models/ModenaDeactivateRequestModel';
-import { IJWK } from '@quarkid/kms-core';
+import { IJWK } from '@sovra/kms-core';
 import { DIDDocumentMetadata } from './models/DidDocumentMetadata';
 import { UpdateCommitmentUtils } from './utils/UpdateCommitmentUtils';
 

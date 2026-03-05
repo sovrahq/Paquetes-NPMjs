@@ -2,8 +2,8 @@ import {
   AssertionMethodPurpose,
   AuthenticationPurpose,
   KeyAgreementPurpose,
-} from '@quarkid/did-core';
-import { Base, BaseConverter, IJWK, IKeyPair, IKMS, Suite } from '@quarkid/kms-core';
+} from '@sovra/did-core';
+import { Base, BaseConverter, IJWK, IKeyPair, IKMS, Suite } from '@sovra/kms-core';
 import {
   IdentityDataShareBehavior,
   IdentityExportResult,
@@ -19,7 +19,7 @@ import {
 import { IAgentResolver } from './agent-resolver';
 import { IAgentStorage } from './agent-storage';
 import { DID } from './did';
-import { UpdateCommitmentUtils } from "@quarkid/modena-sdk";
+import { UpdateCommitmentUtils } from "@sovra/modena-sdk";
 
 const AGENT_DID_KEY = 'agent-did';
 const OPERATIONAL_DID_KEY = 'operational-did';
@@ -210,7 +210,7 @@ export class AgentIdentity {
 
     const didCommKeys = [...await Promise.all(
       params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.DIDComm)
+        .filter((x) => x.vmKey == VMKey.DIDComm && !x.skipKmsImport)
         .map(async (x) => ({
           id: x.id!,
           pbk: await this.kms.create(Suite.DIDCommV2),
@@ -222,7 +222,7 @@ export class AgentIdentity {
 
     const bbsbls2020Keys = [...await Promise.all(
       params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.VC)
+        .filter((x) => x.vmKey == VMKey.VC && !x.skipKmsImport)
         .map(async (x) => ({
           id: x.id!,
           pbk: await this.kms.create(Suite.Bbsbls2020),
@@ -235,7 +235,7 @@ export class AgentIdentity {
 
     const rsaKeys = [...await Promise.all(
       params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.RSA)
+        .filter((x) => x.vmKey == VMKey.RSA && !x.skipKmsImport)
         .map(async (x) => ({
           id: x.id!,
           pbk: await this.kms.create(Suite.RsaSignature2018),
@@ -248,7 +248,7 @@ export class AgentIdentity {
 
     const ecdskeys = [...await Promise.all(
       params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.ES256k)
+        .filter((x) => x.vmKey == VMKey.ES256k && !x.skipKmsImport)
         .map(async (x) => ({
           id: x.id!,
           pbk: await this.kms.create(Suite.ES256k),
@@ -258,6 +258,14 @@ export class AgentIdentity {
       id: x.id,
       pbk: { publicKeyJWK: x.publicKeyJWK }
     }))];
+
+    // Ed25519 keys — skipKmsImport, use pre-supplied publicKeyJWK
+    const ed25519Keys = params.keysToCreate
+      .filter((x) => x.vmKey == VMKey.Ed25519)
+      .map((x) => ({
+        id: x.id!,
+        pbk: { publicKeyJWK: x.publicKeyJWK }
+      }));
 
     if (!params.services) {
       params.services = new Array<ServiceDefinition>();
@@ -311,6 +319,15 @@ export class AgentIdentity {
                 publicKeyJwk: x.pbk.publicKeyJWK,
                 purpose: [new AuthenticationPurpose()],
                 type: 'EcdsaSecp256k1VerificationKey2019',
+                controller: this.getOperationalDID(),
+              }))
+            )
+            .concat(
+              ed25519Keys.map((x) => ({
+                id: x.id,
+                publicKeyJwk: x.pbk.publicKeyJWK,
+                purpose: [new AssertionMethodPurpose()],
+                type: 'Ed25519VerificationKey2018',
                 controller: this.getOperationalDID(),
               }))
             )
@@ -388,6 +405,12 @@ export class AgentIdentity {
     controllersToAdd?: IJWK[],
     servicesToAdd?: ServiceDefinition[],
     verificationMethodsToAdd?: KeyDefinition[],
+    keysToImport?: {
+      id: string,
+      vmKey: VMKey,
+      publicKeyJWK: IJWK,
+      secrets: any,
+    }[],
     updateKeysToRemove?: {
       publicKeys?: IJWK[];
       updateCommitment?: string[];
@@ -396,6 +419,16 @@ export class AgentIdentity {
   }): Promise<void> {
 
     params.did = params.did || this.getOperationalDID();
+
+    // Import pre-generated keys to KMS (e.g., Ed25519)
+    if (params.keysToImport) {
+      for (const ktu of params.keysToImport) {
+        await this.kms.import({
+          publicKeyHex: BaseConverter.convert(ktu.publicKeyJWK, Base.JWK, Base.Hex, ktu.secrets.keyType),
+          secret: ktu.secrets,
+        });
+      }
+    }
     const didDoc = await this.resolver.resolveWithMetdata(params.did);
 
     const keys = (await this.kms.getPublicKeysBySuiteType(Suite.ES256k)).map(jwk => ({
@@ -418,14 +451,22 @@ export class AgentIdentity {
         }))
     );
 
-    const bbsbls2020Keys = await Promise.all(
-      params.verificationMethodsToAdd
-        .filter((x) => x.vmKey == VMKey.VC)
-        .map(async (x) => ({
-          id: x.id!,
-          pbk: await this.kms.create(Suite.Bbsbls2020),
-        }))
-    );
+    const bbsbls2020Keys = [
+      ...await Promise.all(
+        params.verificationMethodsToAdd
+          .filter((x) => x.vmKey == VMKey.VC && !x.skipKmsImport)
+          .map(async (x) => ({
+            id: x.id!,
+            pbk: await this.kms.create(Suite.Bbsbls2020),
+          }))
+      ),
+      ...(params.keysToImport || [])
+        .filter(x => x.vmKey == VMKey.VC || x.vmKey == VMKey.Ed25519)
+        .map(x => ({ id: x.id, pbk: { publicKeyJWK: x.publicKeyJWK } })),
+      ...params.verificationMethodsToAdd
+        .filter(x => (x.vmKey == VMKey.VC || x.vmKey == VMKey.Ed25519) && x.skipKmsImport)
+        .map(x => ({ id: x.id, pbk: { publicKeyJWK: x.publicKeyJWK } })),
+    ];
 
     const rsaKeys = await Promise.all(
       params.verificationMethodsToAdd
@@ -484,13 +525,17 @@ export class AgentIdentity {
         }))
         .concat(
           bbsbls2020Keys
-            .map((x) => ({
-              id: x.id,
-              publicKeyJwk: x.pbk.publicKeyJWK,
-              purpose: [new AssertionMethodPurpose()],
-              type: 'Bls12381G1Key2020',
-              controller: this.getOperationalDID(),
-            }))
+            .map((x) => {
+              const jwk = x.pbk.publicKeyJWK;
+              const isEd25519 = jwk && jwk.kty === 'OKP' && jwk.crv === 'Ed25519';
+              return {
+                id: x.id,
+                publicKeyJwk: jwk,
+                purpose: [new AssertionMethodPurpose()],
+                type: isEd25519 ? 'Ed25519VerificationKey2018' : 'Bls12381G1Key2020',
+                controller: this.getOperationalDID(),
+              };
+            })
             .concat(
               rsaKeys.map((x) => ({
                 id: x.id,
@@ -501,13 +546,17 @@ export class AgentIdentity {
               }))
             )
             .concat(
-              es256kKeys.map((x) => ({
-                id: x.id,
-                publicKeyJwk: x.pbk.publicKeyJWK,
-                purpose: [new AuthenticationPurpose()],
-                type: 'EcdsaSecp256k1VerificationKey2019',
-                controller: this.getOperationalDID(),
-              }))
+              es256kKeys.map((x) => {
+                const jwk = x.pbk.publicKeyJWK;
+                const isEd25519 = jwk && jwk.kty === 'OKP' && jwk.crv === 'Ed25519';
+                return {
+                  id: x.id,
+                  publicKeyJwk: jwk,
+                  purpose: [new AuthenticationPurpose()],
+                  type: isEd25519 ? 'Ed25519VerificationKey2018' : 'EcdsaSecp256k1VerificationKey2019',
+                  controller: this.getOperationalDID(),
+                };
+              })
             )),
       // verificationMethodsToAdd: didCommKeys
       //   .map((x) => ({

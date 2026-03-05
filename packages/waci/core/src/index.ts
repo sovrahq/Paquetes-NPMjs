@@ -11,7 +11,7 @@ import './handlers/presentation/step-5-present-proof.handler';
 import './handlers/presentation/step-6-ack-message.handler';
 
 export * from "./handlers/issuance/step-3-propose-credential.handler";
-export { InputCallbacks } from './callbacks';
+export { InputCallbacks, CredentialPresentationResponse } from './callbacks';
 export * from './services/waci-interpreter';
 export * from './types/waci-message';
 export * from './types';

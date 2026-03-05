@@ -1,7 +1,7 @@
-import { DIDDocument, VerificationMethod, VerificationMethodJwk, VerificationMethodPublicKey58 } from "@quarkid/did-core";
-import { Base, BaseConverter, IVCJsonLDKeyPair, Suite, suiteDecorator } from "@quarkid/kms-core";
-import { JsonLDSuite } from "@quarkid/kms-suite-jsonld";
-import { VerifiableCredential } from "@quarkid/vc-core";
+import { DIDDocument, VerificationMethod, VerificationMethodJwk, VerificationMethodPublicKey58 } from "@sovra/did-core";
+import { Base, BaseConverter, IVCJsonLDKeyPair, Suite, suiteDecorator } from "@sovra/kms-core";
+import { JsonLDSuite } from "@sovra/kms-suite-jsonld";
+import { VerifiableCredential } from "@sovra/vc-core";
 import {
   BbsBlsSignature2020,
   BbsBlsSignatureProof2020,

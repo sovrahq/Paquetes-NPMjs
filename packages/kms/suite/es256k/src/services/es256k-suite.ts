@@ -8,7 +8,7 @@ import {
   BaseConverter,
   IJWK,
   Base,
-} from "@quarkid/kms-core";
+} from "@sovra/kms-core";
 import { ethers, wordlists, Wallet, utils } from "ethers";
 
 @suiteDecorator(Suite.ES256k)
@@ -83,6 +83,15 @@ export class ES256kSuite implements IES256kSuite {
       throw new Error(
         "Cannot sign content because wallet was not initialized with secrets."
       );
-    return await this.wallet.signMessage(content);
+
+    // Raw ECDSA signing for Sidetree JWS (no Ethereum message prefix)
+    const hash = ethers.utils.sha256(ethers.utils.toUtf8Bytes(content));
+    const sig = this.wallet._signingKey().signDigest(hash);
+    const rBytes = Buffer.from(ethers.utils.arrayify(sig.r));
+    const sBytes = Buffer.from(ethers.utils.arrayify(sig.s));
+    const sigBuffer = Buffer.alloc(64);
+    rBytes.copy(sigBuffer, 32 - rBytes.length);
+    sBytes.copy(sigBuffer, 64 - sBytes.length);
+    return sigBuffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   }
 }

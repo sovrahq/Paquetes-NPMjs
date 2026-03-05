@@ -1,5 +1,5 @@
-import { Purpose } from "@quarkid/did-core";
-import { IJWK } from "@quarkid/kms-core";
+import { Purpose } from "@sovra/did-core";
+import { IJWK } from "@sovra/kms-core";
 
 export interface ProcessResult {
     canonicalId: string;

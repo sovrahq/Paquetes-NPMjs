@@ -9,12 +9,12 @@ import {
   Actor,
 } from '../../types';
 import { createUUID } from '../../utils';
-import { callbacks } from '../../callbacks';
 
 @RegisterHandler(Actor.Holder, WACIMessageType.OutOfBandInvitation)
 export class OOBInvitationHandler implements WACIMessageHandler {
   async handle(
     messageThread: WACIMessage[],
+    callbacks: any,
   ): Promise<WACIMessageHandlerResponse> {
     const message = messageThread[messageThread.length - 1];
     let responseMessageType: WACIMessageType;

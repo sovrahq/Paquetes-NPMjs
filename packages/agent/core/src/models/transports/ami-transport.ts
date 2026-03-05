@@ -1,11 +1,11 @@
-import { DIDDocument, DIDDocumentUtils } from '@quarkid/did-core';
+import { DIDDocument, DIDDocumentUtils } from '@sovra/did-core';
 import {
   DWNAmiClient,
   DWNMessage,
   MessageStorage,
   SendMessageParams,
   ThreadMethod,
-} from '@quarkid/dwn-client-ami';
+} from '@sovra/dwn-client-ami';
 import { Agent } from '../../agent';
 import { ILiteEvent, LiteEvent } from '../../utils/lite-event';
 import { IAgentResolver } from '../agent-resolver';

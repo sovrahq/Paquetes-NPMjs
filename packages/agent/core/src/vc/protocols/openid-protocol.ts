@@ -1,5 +1,5 @@
-import { VerifiableCredential } from '@quarkid/vc-core';
-import { CredentialManifestStyles } from '@quarkid/waci';
+import { VerifiableCredential } from '@sovra/vc-core';
+import { CredentialManifestStyles } from '@sovra/waci';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { IStorage } from '../../models/agent-storage';

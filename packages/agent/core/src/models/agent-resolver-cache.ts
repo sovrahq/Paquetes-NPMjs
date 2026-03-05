@@ -1,5 +1,5 @@
-import { DIDDocument } from "@quarkid/did-core";
-import { DIDModenaResolver, DIDUniversalResolver, ModenaResponse } from "@quarkid/did-resolver"
+import { DIDDocument } from "@sovra/did-core";
+import { DIDModenaResolver, DIDUniversalResolver, ModenaResponse } from "@sovra/did-resolver"
 import { DID } from "./did";
 const LRU = require('lru-cache');
 import { IAgentResolver } from "./agent-resolver";

@@ -1,4 +1,4 @@
-import { DIDDocument, DIDDocumentMetadata } from "@quarkid/did-core";
+import { DIDDocument, DIDDocumentMetadata } from "@sovra/did-core";
 import axios from "axios";
 import { ModenaResponse } from "../models/modena-response";
 

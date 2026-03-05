@@ -1,6 +1,6 @@
-import { ITransport, MessageArrivedEventArg, TransportSendRequest } from "@quarkid/agent/dist/models/transports/transport";
-import { Agent, DID } from "@quarkid/agent";
-import { ILiteEvent, LiteEvent } from "@quarkid/agent/dist/utils/lite-event";
+import { ITransport, MessageArrivedEventArg, TransportSendRequest } from "@sovra/agent/dist/models/transports/transport";
+import { Agent, DID } from "@sovra/agent";
+import { ILiteEvent, LiteEvent } from "@sovra/agent/dist/utils/lite-event";
 
 const transportMessages = new Array<TransportSendRequest>();
 const messageArrived: LiteEvent<MessageArrivedEventArg> = new LiteEvent();

@@ -1,5 +1,5 @@
 {
-  "name": "@quarkid/ami-core",
+  "name": "@sovra/ami-core",
   "version": "0.1.2",
   "description": "",
   "main": "dist/index.js",
@@ -22,6 +22,10 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@quarkid/did-core": "1.1.2"
-  }
+    "@sovra/did-core": "1.1.2"
+  ,
+  "publishConfig": { "access": "public" }
+}
+,
+  "publishConfig": { "access": "public" }
 }

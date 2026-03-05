@@ -1,5 +1,5 @@
 {
-  "name": "@quarkid/kms-core",
+  "name": "@sovra/kms-core",
   "version": "1.4.0-4",
   "description": "",
   "main": "dist/index.js",
@@ -20,12 +20,12 @@
     "typescript": "^4.5.4"
   },
   "peerDependencies": {
-    "@quarkid/did-core": "1.1.2",
-    "@quarkid/vc-core": "1.1.0-2"
+    "@sovra/did-core": "1.1.2",
+    "@sovra/vc-core": "1.1.0-2"
   },
   "dependencies": {
-    "@quarkid/did-core": "1.1.2",
-    "@quarkid/vc-core": "1.1.0-2",
+    "@sovra/did-core": "1.1.2",
+    "@sovra/vc-core": "1.1.0-2",
     "base64url": "^3.0.1",
     "bs58": "^5.0.0",
     "did-jwt": "^6.11.0",
@@ -33,5 +33,9 @@
     "multibase": "^4.0.6",
     "multiformats": "^9.6.5",
     "text-encoding": "^0.7.0"
-  }
+  ,
+  "publishConfig": { "access": "public" }
+}
+,
+  "publishConfig": { "access": "public" }
 }

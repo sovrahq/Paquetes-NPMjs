@@ -1,10 +1,10 @@
-import { Base, BaseConverter, IKMS, Suite } from "@quarkid/kms-core";
-import { DIDModenaResolver } from "@quarkid/did-resolver";
+import { Base, BaseConverter, IKMS, Suite } from "@sovra/kms-core";
+import { DIDModenaResolver } from "@sovra/did-resolver";
 import {
   DIDDocumentUtils,
   VerificationMethodJwk,
   VerificationMethodTypes,
-} from "@quarkid/did-core";
+} from "@sovra/did-core";
 
 export class DidCommService {
   constructor(

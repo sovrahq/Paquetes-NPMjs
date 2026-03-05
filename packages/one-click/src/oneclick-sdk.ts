@@ -1,9 +1,9 @@
-import { DIDCommPackedMessage } from "@quarkid/kms-core";
+import { DIDCommPackedMessage } from "@sovra/kms-core";
 import { Interpreter } from "./interpreter";
 import { LiteEvent } from "./lite-event";
 import { Guid } from "./utils/guid";
 import { OneClickMessage, MessageTypes, OobGoalCode, OobMessage, AuthRequestMessage } from "./utils/message";
-import { IStorage } from "@quarkid/did-core";
+import { IStorage } from "@sovra/did-core";
 import { OneClickMessageStorage, OneClickThreadStorage } from "./storage/OneClickMessageStorage";
 
 export class OneClickSDK {

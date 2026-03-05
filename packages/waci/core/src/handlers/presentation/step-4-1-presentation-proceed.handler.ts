@@ -1,7 +1,5 @@
-import { RegisterHandler } from '../decorators/register-handler.decorator';
 import {
   WACIMessage,
-  WACIMessageHandler,
   WACIMessageHandlerResponse,
   WACIMessageResponseType,
   WACIMessageType,
@@ -10,12 +8,11 @@ import {
   CredentialPresentation,
 } from '../../types';
 import { createUUID } from '../../utils';
-import { CredentialPresentationResponse } from '../../callbacks';
 
-@RegisterHandler(Actor.Holder, WACIMessageType.RequestPresentation)
-export class RequestPresentationHandler implements WACIMessageHandler {
-  async handle(
+export class PresentationProceed {
+  static async presentCredentials(
     messageThread: WACIMessage[],
+    credentialsToPresent: any[],
     callbacks: any,
   ): Promise<WACIMessageHandlerResponse> {
     const message = messageThread[messageThread.length - 1];
@@ -29,23 +26,11 @@ export class RequestPresentationHandler implements WACIMessageHandler {
     if (!presentationDefinition?.input_descriptors) {
       throw new Error('Presentation definition without input required');
     }
-    const response = await callbacks[
-      Actor.Holder
-    ].getCredentialPresentation({
-      frame: presentationDefinition.frame,
-      inputDescriptors: presentationDefinition.input_descriptors,
-      message
-    });
-
-    if (response == CredentialPresentationResponse.AsyncProcess) {
-      return;
-    }
-
 
     const credentialPresentation = await this.createMessage(
       presentationDefinition,
       challenge,
-      response.credentialsToPresent,
+      credentialsToPresent,
       holderDID,
       message,
       callbacks,
@@ -64,7 +49,7 @@ export class RequestPresentationHandler implements WACIMessageHandler {
     };
   }
 
-  private async createMessage(
+  private static async createMessage(
     presentationDefinition: PresentationDefinition,
     challenge: string,
     credentialsToPresent: any[],

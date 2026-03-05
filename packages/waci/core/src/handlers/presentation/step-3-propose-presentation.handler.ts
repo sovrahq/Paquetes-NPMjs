@@ -11,12 +11,12 @@ import {
   PresentationDefinitionFrame,
 } from '../../types';
 import { createUUID } from '../../utils';
-import { callbacks } from '../../callbacks';
 
 @RegisterHandler(Actor.Verifier, WACIMessageType.ProposePresentation)
 export class ProposePresentationHandler implements WACIMessageHandler {
   async handle(
     messageThread: WACIMessage[],
+    callbacks: any,
   ): Promise<WACIMessageHandlerResponse> {
     const message = messageThread[messageThread.length - 1];
     const holderDID = message.from;

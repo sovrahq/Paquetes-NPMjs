@@ -1,4 +1,4 @@
-import { CredentialStatus, CredentialStatusType } from "@quarkid/vc-core";
+import { CredentialStatus, CredentialStatusType } from "@sovra/vc-core";
 
 export class ExtrimianCredentialStatus extends CredentialStatus {
     type: ExtrimianCredentialStatusType | any;

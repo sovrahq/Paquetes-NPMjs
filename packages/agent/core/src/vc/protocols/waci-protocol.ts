@@ -1,10 +1,10 @@
-import { Issuer, UnsignedCredential, VerifiableCredential } from "@quarkid/vc-core";
+import { Issuer, UnsignedCredential, VerifiableCredential } from "@sovra/vc-core";
 import {
     Actor, ClaimFormat, CredentialFulfillment, CredentialManifest, CredentialManifestStyles,
     DisplayMappingObject, GoalCode, InputDescriptor, OutputDescriptor, PresentationDefinition,
     PresentationDefinitionFrame, WACIInterpreter, WACIMessage, WACIMessageType, validateVcByInputDescriptor,
     OfferCredentialMessageParams
-} from "@quarkid/waci";
+} from "@sovra/waci";
 import { decode } from "base-64";
 import * as jsonpath from 'jsonpath';
 import * as jsonschema from 'jsonschema';
@@ -25,6 +25,10 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
     presentationDefinition?: (invitationId: string) => Promise<{ inputDescriptors: InputDescriptor[], frame?: PresentationDefinitionFrame }>;
     credentialApplication?: (inputs: { descriptor: InputDescriptor, credentials: VerifiableCredentialWithInfo[] }[], selectiveDisclosure?: SelectiveDisclosure, message?: WACIMessage, issuer?: (Issuer | CredentialManifestStyles), credentialsToReceive?: VerifiableCredentialWithInfo[]) => Promise<VerifiableCredential[]>;
     businessVerificationRules?: (invitationId: string, holderDID: DID, vcs: VerifiableCredential[]) => Promise<BusinessRulesVerificationResult>;
+
+    // Custom sign/verify hooks for Ed25519 + SD-JWT
+    customSignCredential?: (vc: any, did: string) => Promise<any>;
+    customVerifyCredential?: (vc: any) => Promise<any>;
 
     constructor(params?: {
         issuer?: {
@@ -50,6 +54,8 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
             presentationDefinition?: (invitationId: string) => Promise<{ inputDescriptors: InputDescriptor[], frame?: PresentationDefinitionFrame }>,
             businessVerificationRules?: (invitationId: string, holderDID: DID, vcs: VerifiableCredential[]) => Promise<BusinessRulesVerificationResult>,
         }
+        customSignCredential?: (vc: any, did: string) => Promise<any>,
+        customVerifyCredential?: (vc: any) => Promise<any>,
         storage: IStorage,
     }) {
         super();
@@ -60,6 +66,8 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
         this.credentialApplication = params?.holder?.credentialApplication;
         this.businessVerificationRules = params.verifier?.businessVerificationRules;
         this.storage = params?.storage;
+        this.customSignCredential = params?.customSignCredential;
+        this.customVerifyCredential = params?.customVerifyCredential;
     }
 
     initialize(params: {
@@ -83,7 +91,7 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                             output: result.credentialManifest.credentials.map(x => ({
                                 outputDescriptor: x.outputDescriptor,
                                 verifiableCredential: x.credential,
-                                format: "ldp_vc"
+                                format: (x as any).format || "ldp_vc"
                             })),
                             issuerStyles: result.credentialManifest.issuer.styles,
                             input: result.credentialManifest.inputDescriptors,
@@ -101,12 +109,24 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                     const currentDID = !args?.message ? null : this.agent.identity.getDIDs().find(x => x == args.message.to as any ||
                         (Array.isArray(args.message.to) && args.message.to.some(y => y == x)));
 
-                    const vc = await this.agent.vc.signVC({
-                        credential: args.vc,
-                        did: currentDID ? DID.from(currentDID) : null
-                    });
-
-                    this.onCredentialIssued.trigger({ vc: vc, toDID: DID.from(vc.credentialSubject.id), invitationId });
+                    let vc;
+                    if (this.customSignCredential) {
+                        vc = await this.customSignCredential(args.vc, currentDID || this.agent.identity.getOperationalDID().value);
+                    }
+                    // If customSignCredential returned null or was not set, fall back to standard JSON-LD signing
+                    if (!vc) {
+                        vc = await this.agent.vc.signVC({
+                            credential: args.vc,
+                            did: currentDID ? DID.from(currentDID) : null
+                        });
+                        this.onCredentialIssued.trigger({ vc: vc, toDID: DID.from(vc.credentialSubject.id), invitationId });
+                    } else {
+                        // For SD-JWT (string), extract holderDID from the original credential
+                        const holderDID = typeof vc === 'string'
+                            ? (args.vc.credentialSubject && args.vc.credentialSubject.id ? DID.from(args.vc.credentialSubject.id) : null)
+                            : DID.from(vc.credentialSubject.id);
+                        this.onCredentialIssued.trigger({ vc: vc, toDID: holderDID, invitationId });
+                    }
 
                     return vc;
                 },
@@ -134,9 +154,12 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                         });
                     }
                 },
-                verifyCredential: async (vc) => await this.agent.vc.verifyVC({
-                    vc: vc
-                }),
+                verifyCredential: async (vc) => {
+                    if (this.customVerifyCredential) {
+                        return await this.customVerifyCredential(vc);
+                    }
+                    return await this.agent.vc.verifyVC({ vc: vc });
+                },
                 handleIssuanceAck: async (p: { status: any, from: string, pthid: string, thid: string, message: WACIMessage }) => {
                     const data = await this.storage.get(p.thid);
                     const invitationId = data[0].pthid;
@@ -401,7 +424,12 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                     });
                 },
                 verifyCredential: async (vc: VerifiableCredential) => {
-                    const result = await this.agent.vc.verifyVC({ vc: vc });
+                    let result;
+                    if (this.customVerifyCredential) {
+                        result = await this.customVerifyCredential(vc);
+                    } else {
+                        result = await this.agent.vc.verifyVC({ vc: vc });
+                    }
 
                     this.onVcVerified.trigger({
                         verified: result.result,
@@ -412,6 +440,14 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                     return result;
                 },
                 verifyPresentation: async (p) => {
+                    // Check if VP contains SD-JWT credentials (string with ~ separator)
+                    const vcs = p.presentation && p.presentation.verifiableCredential ? p.presentation.verifiableCredential : [];
+                    const hasSDJWT = vcs.some((vc: any) => typeof vc === 'string' && vc.includes('~'));
+                    if (hasSDJWT) {
+                        // SD-JWT VPs don't have a proof field — skip VP-level verification
+                        return { result: true };
+                    }
+
                     return {
                         result: true
                     }
@@ -506,13 +542,14 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
     }
 
 
-    async createOBBInvitation(goalCode: GoalCode, did: DID) {
+    async createOBBInvitation(goalCode: GoalCode, did: DID, didcommVersion?: string) {
         if (!did) throw new Error("You need set a did to createOOBInvitation")
-        return await this.waciInterpreter.createOOBInvitation(did.value, goalCode);
+        const version = didcommVersion === 'v1' ? 'v1' : undefined;
+        return await this.waciInterpreter.createOOBInvitation(did.value, goalCode, {}, version);
     }
 
-    async createInvitationMessage(flow: CredentialFlow, did: DID): Promise<WACIMessage> {
-        return await this.createOBBInvitation(flow == CredentialFlow.Issuance ? GoalCode.Issuance : GoalCode.Presentation, did);
+    async createInvitationMessage(flow: CredentialFlow, did: DID, didcommVersion?: string): Promise<WACIMessage> {
+        return await this.createOBBInvitation(flow == CredentialFlow.Issuance ? GoalCode.Issuance : GoalCode.Presentation, did, didcommVersion);
     }
 
     async isProtocolMessage(message: any): Promise<boolean> {

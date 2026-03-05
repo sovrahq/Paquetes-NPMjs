@@ -1,8 +1,8 @@
-// import { VerifiableCredential } from "@quarkid/vc-core";
+// import { VerifiableCredential } from "@sovra/vc-core";
 import { Agent } from "../src/agent";
 import { DWNTransport, IdentityPlainTextDataShareBehavior, WACIProtocol } from "../src";
 import { MemorySecureStorage, MemoryStorage } from "./mock/memory-storage";
-import { VerificationMethodTypes } from "@quarkid/did-core";
+import { VerificationMethodTypes } from "@sovra/did-core";
 import { AgentModenaUniversalRegistry, AgentModenaUniversalResolver } from "../src";
 import { TestConfig } from "./config";
 import { FileSystemStorage } from "./mock/filesystme-storage";

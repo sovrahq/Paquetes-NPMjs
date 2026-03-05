@@ -92,7 +92,7 @@ function bumpVersion(v) {
 }
 
 const isQuarkid = (name) =>
-  typeof name === "string" && name.startsWith("@quarkid/");
+  typeof name === "string" && name.startsWith("@sovra/");
 
 // Convierte dependencias tipo workspace: a semver normal
 function fromWorkspaceToSemver(oldSpec, newVersion) {
@@ -189,7 +189,7 @@ async function main() {
     // 1) Actualizar la versión del paquete
     j.version = p.newVersion;
 
-    // 2) Actualizar las referencias a otros paquetes @quarkid/* del monorepo
+    // 2) Actualizar las referencias a otros paquetes @sovra/* del monorepo
     for (const field of DEP_FIELDS) {
       const deps = j[field];
       if (!deps) continue;
@@ -213,7 +213,7 @@ async function main() {
   }
 
   console.log(
-    "\n✔ Listo. package.json actualizados (version + deps internas @quarkid/*)."
+    "\n✔ Listo. package.json actualizados (version + deps internas @sovra/*)."
   );
 }
 
