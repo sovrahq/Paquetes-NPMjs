@@ -25,6 +25,7 @@ export interface IDIDCommV2Suite {
         toKeys: {
             verificationMethodId: string;
             publicKeyHex: string;
+            publicKeyCrv?: string;
         }[];
         message: IDIDCommMessage;
         packing: DIDCommMessagePacking;

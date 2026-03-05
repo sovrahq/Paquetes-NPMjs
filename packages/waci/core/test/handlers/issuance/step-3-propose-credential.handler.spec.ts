@@ -8,7 +8,6 @@ import {
   credentialManifestParamsStub,
   offerCredentialMessageStub1,
 } from '../../stubs';
-import { callbacks } from '../../../src/callbacks';
 import { ProposeCredentialHandler } from '../../../src/handlers/issuance/step-3-propose-credential.handler';
 
 jest.mock('../../../src/utils', () => ({
@@ -28,13 +27,13 @@ describe('ProposeCredentialHandler', () => {
     to: ['did:example:issuer'],
   };
 
-  Object.assign(callbacks, {
+  const callbacks = {
     issuer: { getCredentialManifest: () => credentialManifestParamsStub },
-  });
+  };
 
   const handler = new ProposeCredentialHandler();
   it('should return an offer credential message', async () => {
-    const response = await handler.handle([message]);
+    const response = await handler.handle([message], callbacks);
     const expectedResponse: WACIMessageHandlerResponse = {
       responseType: WACIMessageResponseType.ReplyThread,
       message: offerCredentialMessageStub1,

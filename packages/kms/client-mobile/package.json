@@ -28,9 +28,8 @@
     "@sovra/kms-suite-es256k": "^1.2.4",
     "@sovra/vc-core": "1.1.0-2",
     "ts-jest": "^28.0.1"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

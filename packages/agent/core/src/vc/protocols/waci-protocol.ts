@@ -1,7 +1,7 @@
 import { Issuer, UnsignedCredential, VerifiableCredential } from "@sovra/vc-core";
 import {
     Actor, ClaimFormat, CredentialFulfillment, CredentialManifest, CredentialManifestStyles,
-    DisplayMappingObject, GoalCode, InputDescriptor, OutputDescriptor, PresentationDefinition,
+    DIDCommVersion, DisplayMappingObject, GoalCode, InputDescriptor, OutputDescriptor, PresentationDefinition,
     PresentationDefinitionFrame, WACIInterpreter, WACIMessage, WACIMessageType, validateVcByInputDescriptor,
     OfferCredentialMessageParams
 } from "@sovra/waci";
@@ -544,7 +544,7 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
 
     async createOBBInvitation(goalCode: GoalCode, did: DID, didcommVersion?: string) {
         if (!did) throw new Error("You need set a did to createOOBInvitation")
-        const version = didcommVersion === 'v1' ? 'v1' : undefined;
+        const version = didcommVersion === 'v1' ? DIDCommVersion.V1 : undefined;
         return await this.waciInterpreter.createOOBInvitation(did.value, goalCode, {}, version);
     }
 

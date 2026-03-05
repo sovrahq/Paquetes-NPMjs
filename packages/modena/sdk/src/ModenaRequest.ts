@@ -41,11 +41,11 @@ export default class ModenaRequest {
 
     // Validate recovery and update public keys.
     recoveryKeys.forEach(recoveryKey => {
-      InputValidator.validateEs256kOperationKey(recoveryKey, OperationKeyType.Public);
+      InputValidator.validateEs256kOperationKey(recoveryKey as JwkEs256k, OperationKeyType.Public);
     });
 
     updateKeys.forEach(updateKey => {
-      InputValidator.validateEs256kOperationKey(updateKey, OperationKeyType.Public);
+      InputValidator.validateEs256kOperationKey(updateKey as JwkEs256k, OperationKeyType.Public);
     });
 
     // Validate all given DID Document keys.
@@ -197,7 +197,7 @@ export default class ModenaRequest {
     InputValidator.validateEs256kOperationKey(input.updatePublicKey, OperationKeyType.Public);
 
     // Validate next update public key
-    input.nextUpdatePublicKeys.forEach(x => InputValidator.validateEs256kOperationKey(x, OperationKeyType.Public));
+    input.nextUpdatePublicKeys.forEach(x => InputValidator.validateEs256kOperationKey(x as JwkEs256k, OperationKeyType.Public));
 
     // Validate all given service.
     ModenaRequest.validateServices(input.servicesToAdd);

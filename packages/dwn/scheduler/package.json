@@ -29,9 +29,8 @@
   "dependencies": {
     "@sovra/dwn-client": "^1.2.2",
     "node-cron": "^3.0.0"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

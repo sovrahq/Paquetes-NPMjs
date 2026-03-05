@@ -93,7 +93,7 @@ export class ModenaUniversalRegistry extends ModenaRegistryBase<ModenaUniversalP
             documentMetadata: params.documentMetadata,
             updateKeysToRemove: params.updateKeysToRemove,
             didSuffix: params.didSuffix,
-            updatePublicKey: params.updatePublicKey,
+            updatePublicKey: params.updatePublicKey as any,
             signer: {
                 async sign(header: object, content: object): Promise<string> {
                     return await params.signer(content);
@@ -105,7 +105,7 @@ export class ModenaUniversalRegistry extends ModenaRegistryBase<ModenaUniversalP
                 id: x.id,
                 publicKeyJwk: x.publicKeyJwk,
                 type: x.type,
-                purposes: x.purpose.map(y => y.name)
+                purposes: x.purpose.map(y => y.name) as any[]
             })),
             servicesToAdd: params.servicesToAdd
         });

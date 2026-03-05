@@ -27,9 +27,8 @@
     "@sovra/did-core": "1.1.2",
     "@sovra/kms-core": "1.4.0-4",
     "@sovra/vc-core": "1.1.0-2"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

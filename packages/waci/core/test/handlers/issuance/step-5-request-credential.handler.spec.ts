@@ -11,7 +11,6 @@ import {
   credentialSignatureStub,
   offerCredentialMessageStub2,
 } from '../../stubs';
-import { callbacks } from '../../../src/callbacks';
 import { RequestCredentialHandler } from '../../../src/handlers/issuance/step-5-request-credential.handler';
 
 jest.mock('../../../src/utils', () => ({
@@ -25,13 +24,13 @@ jest.mock('../../../src/utils', () => ({
 }));
 
 describe('RequestCredentialHandler', () => {
-  Object.assign(callbacks, {
+  const callbacks: any = {
     issuer: {
       signCredential: (vc) => ({ ...vc, proof: credentialSignatureStub }),
       verifyCredential: async () => true,
       verifyPresentation: async () => true,
     },
-  });
+  };
 
   const handler = new RequestCredentialHandler();
 
@@ -39,7 +38,7 @@ describe('RequestCredentialHandler', () => {
     const response = await handler.handle([
       offerCredentialMessageStub1,
       requestCredentialMessageStub,
-    ]);
+    ], callbacks);
     const expectedResponse: WACIMessageHandlerResponse = {
       responseType: WACIMessageResponseType.ReplyThread,
       message: {
@@ -67,7 +66,7 @@ describe('RequestCredentialHandler', () => {
         body: {},
         attachments: [],
       },
-    ]);
+    ], callbacks);
     const expectedResponse: WACIMessageHandlerResponse = {
       responseType: WACIMessageResponseType.ReplyThread,
       message: {
@@ -84,20 +83,20 @@ describe('RequestCredentialHandler', () => {
   });
 
   it('should return undefined/void when credential application fails', async () => {
-    Object.assign(callbacks, {
+    const failCallbacks: any = {
       issuer: {
         signCredential: (vc) => ({ ...vc, proof: credentialSignatureStub }),
         verifyCredential: async () => false,
         verifyPresentation: async () => false,
       },
-    });
+    };
     const response = await handler.handle([
       offerCredentialMessageStub2,
       {
         ...requestCredentialMessageStub,
         attachments: [badCredentialApplicationStub],
       },
-    ]);
+    ], failCallbacks);
     expect(response).toBe(undefined);
   });
 });

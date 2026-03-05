@@ -26,9 +26,8 @@
     "@sovra/vc-core": "1.1.0-2",
     "hashi-vault-js": "0.4.11",
     "ts-jest": "^28.0.1"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

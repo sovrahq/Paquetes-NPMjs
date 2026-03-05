@@ -1,4 +1,3 @@
-import { callbacks } from '../../../src/callbacks';
 import {
   badPresentProofMessageStub,
   presentProofMessageStub,
@@ -23,19 +22,20 @@ jest.mock('../../../src/utils', () => ({
 }));
 
 describe('PresentProofHandler', () => {
-  Object.assign(callbacks, {
+  const callbacks: any = {
     verifier: {
       getPresentationDefinition: async () => [],
       verifyCredential: () => true,
       verifyPresentation: () => true,
     },
-  });
+  };
+
   const handler = new PresentProofHandler();
   it('should return status OK', async () => {
     const response = await handler.handle([
       requestPresentationMessageStub,
       presentProofMessageStub,
-    ]);
+    ], callbacks);
     const expectedResponse: WACIMessageHandlerResponse = {
       responseType: WACIMessageResponseType.ReplyThread,
       message: {
@@ -54,7 +54,7 @@ describe('PresentProofHandler', () => {
   });
 
   it('should return status FAIL when wrong data is presented', async () => {
-    Object.assign(callbacks, {
+    const failCallbacks: any = {
       verifier: {
         getPresentationDefinition: async () => [
           {
@@ -113,7 +113,7 @@ describe('PresentProofHandler', () => {
         verifyCredential: () => true,
         verifyPresentation: () => true,
       },
-    });
+    };
 
     const response2 = await handler.handle([
       requestPresentationMessageStub,
@@ -121,7 +121,7 @@ describe('PresentProofHandler', () => {
         ...badPresentProofMessageStub,
         attachments: [],
       },
-    ]);
+    ], failCallbacks);
 
     const expectedResponse = {
       message: {

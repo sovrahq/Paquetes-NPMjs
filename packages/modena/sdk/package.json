@@ -50,13 +50,16 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
-    ,
-  "publishConfig": { "access": "public" }
-}
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+      "pre-commit": "npm run lint",
+      "publishConfig": {
+        "access": "public"
+      }
+    },
+    "publishConfig": {
+      "access": "public"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

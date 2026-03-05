@@ -22,9 +22,8 @@
   },
   "dependencies": {
     "reflect-metadata": "^0.1.13"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

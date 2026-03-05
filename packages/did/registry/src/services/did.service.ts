@@ -62,7 +62,7 @@ export class Did extends ModenaRegistryBase<ModenaDidPublishRequest> {
       documentMetadata: params.documentMetadata,
       updateKeysToRemove: params.updateKeysToRemove,
       didSuffix: params.didSuffix,
-      updatePublicKey: params.updatePublicKey,
+      updatePublicKey: params.updatePublicKey as any,
       signer: {
         async sign(header: object, content: object): Promise<string> {
           return await params.signer(content);

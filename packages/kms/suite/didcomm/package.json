@@ -29,9 +29,8 @@
     "jsonld": "^5.2.0",
     "libsodium": "^0.7.9",
     "libsodium-wrappers": "^0.7.9"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

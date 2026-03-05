@@ -7,7 +7,6 @@ import {
   offerCredentialMessageStub2,
   requestCredentialMessageStub,
 } from '../../stubs';
-import { callbacks } from '../../../src/callbacks';
 import { OfferCredentialHandler } from '../../../src/handlers/issuance/step-4-offer-credential.handler';
 
 jest.mock('../../../src/utils', () => ({
@@ -19,7 +18,7 @@ jest.mock('../../../src/utils', () => ({
 }));
 
 describe('OfferCredentialHandler', () => {
-  Object.assign(callbacks, {
+  const callbacks: any = {
     holder: {
       getCredentialApplication: () => ({
         credentialsToPresent: credentialsToPresentStub,
@@ -40,11 +39,11 @@ describe('OfferCredentialHandler', () => {
         },
       }),
     },
-  });
+  };
 
   const handler = new OfferCredentialHandler();
   it('should return a request credential message', async () => {
-    const response = await handler.handle([offerCredentialMessageStub2]);
+    const response = await handler.handle([offerCredentialMessageStub2], callbacks);
     const expectedResponse: WACIMessageHandlerResponse = {
       responseType: WACIMessageResponseType.ReplyThread,
       message: requestCredentialMessageStub,

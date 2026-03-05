@@ -37,7 +37,7 @@ export abstract class VCProtocol<TProtocolMessage = any> {
     abstract processMessage(message: TProtocolMessage, context?: any, did?: DID): Promise<VCProtocolResponse | void>;
     abstract isProtocolMessage(message: any): Promise<boolean>;
 
-    abstract createInvitationMessage(flow: CredentialFlow, did: DID): Promise<TProtocolMessage>;
+    abstract createInvitationMessage(flow: CredentialFlow, did: DID, didcommVersion?: string): Promise<TProtocolMessage>;
 
     protected agent: Agent;
 

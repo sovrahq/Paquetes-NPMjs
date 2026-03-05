@@ -4,6 +4,7 @@ import { OfferCredentialMessageParams } from '../../src/handlers/issuance/step-3
 export const credentialManifestParamsStub: OfferCredentialMessageParams = {
   issuerDid: 'did:test:123',
   issuerName: 'testing',
+  issuerStyles: {},
   output: [
     {
       format: 'ldp_vc',

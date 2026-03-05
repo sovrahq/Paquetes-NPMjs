@@ -29,9 +29,8 @@
     "jsonld-document-loader": "1.2.1",
     "jsonld-signatures": "5.0.1",
     "jwk-to-pem": "^2.0.5"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

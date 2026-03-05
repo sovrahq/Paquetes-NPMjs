@@ -23,9 +23,8 @@
   },
   "dependencies": {
     "@sovra/did-core": "1.1.2"
-  ,
-  "publishConfig": { "access": "public" }
-}
-,
-  "publishConfig": { "access": "public" }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
