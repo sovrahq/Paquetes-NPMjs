@@ -1,4 +1,4 @@
-import { DIDDocument } from "@sovra/did-core";
+import { DIDDocument } from "@sovrahq/did-core";
 import { DIDDocumentMetadata } from "./did-doc-metadata";
 
 export class ModenaResponse {

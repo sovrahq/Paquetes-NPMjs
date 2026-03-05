@@ -1,9 +1,9 @@
-import { CredentialDisplay, IssuerData, VerifiableCredentialWithInfo } from "@sovra/agent/src/vc/protocols/waci-protocol";
-import { AssertionMethodPurpose, AuthenticationPurpose, Purpose, VerificationMethodJwk } from "@sovra/did-core";
-import { Base, BaseConverter, IJWK, IKMS, Suite, getTypeBySuite } from "@sovra/kms-core";
-import { VerifiableCredential } from "@sovra/vc-core";
-import { VCSuiteError, VCVerifierService } from "@sovra/vc-verifier";
-import { CredentialManifestStyles, PresentationDefinitionFrame } from "@sovra/waci";
+import { CredentialDisplay, IssuerData, VerifiableCredentialWithInfo } from "@sovrahq/agent/src/vc/protocols/waci-protocol";
+import { AssertionMethodPurpose, AuthenticationPurpose, Purpose, VerificationMethodJwk } from "@sovrahq/did-core";
+import { Base, BaseConverter, IJWK, IKMS, Suite, getTypeBySuite } from "@sovrahq/kms-core";
+import { VerifiableCredential } from "@sovrahq/vc-core";
+import { VCSuiteError, VCVerifierService } from "@sovrahq/vc-verifier";
+import { CredentialManifestStyles, PresentationDefinitionFrame } from "@sovrahq/waci";
 import { encode, decode } from "base-64";
 import { VCProtocolNotFoundError } from "../exceptions/vc-protocol-not-found";
 import { Messaging } from "../messaging/messaging";

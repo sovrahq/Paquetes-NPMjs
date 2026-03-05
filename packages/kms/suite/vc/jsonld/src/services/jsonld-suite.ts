@@ -1,5 +1,5 @@
-import { IVCJsonLDKeyPair, IVCSuite } from "@sovra/kms-core";
-import { AuthenticationPurpose, DIDDocument, Purpose, VerificationMethod } from "@sovra/did-core";
+import { IVCJsonLDKeyPair, IVCSuite } from "@sovrahq/kms-core";
+import { AuthenticationPurpose, DIDDocument, Purpose, VerificationMethod } from "@sovrahq/did-core";
 const jsonld = require("jsonld-signatures");
 const documentLoaders = require("jsonld");
 const axios = require("axios");

@@ -6,10 +6,10 @@ import {
   IAgentPluginResponse,
   IStatusListAgentPlugin,
   IStatusListPluginMessage,
-} from '@sovra/agent';
+} from '@sovrahq/agent';
 import { ExtrimianCredentialStatus, PersistanceType } from '../models/extrimian-credential-status';
 import axios from "axios";
-import { IStorage } from '@sovra/agent';
+import { IStorage } from '@sovrahq/agent';
 import { BitArray } from '../models/bit-array';
 
 export class ExtrimianStatusListAgentPlugin implements IStatusListAgentPlugin {

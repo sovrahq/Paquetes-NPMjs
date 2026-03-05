@@ -5,8 +5,8 @@ import {
   BaseConverter,
   Base,
   IJWK,
-} from "@sovra/kms-core";
-import "@sovra/kms-suite-bbsbls2020";
+} from "@sovrahq/kms-core";
+import "@sovrahq/kms-suite-bbsbls2020";
 
 export class KMSClientBbs {
   constructor() {}

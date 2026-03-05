@@ -1,5 +1,5 @@
 
-import { ContentType } from "@sovra/ami-core";
+import { ContentType } from "@sovrahq/ami-core";
 
 
 export function getFileExtention( type: ContentType): string {

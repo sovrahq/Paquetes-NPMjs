@@ -1,7 +1,7 @@
-import { VerificationMethod, VerificationMethodJwk, VerificationMethodPublicKey58 } from "@sovra/did-core";
+import { VerificationMethod, VerificationMethodJwk, VerificationMethodPublicKey58 } from "@sovrahq/did-core";
 import { JsonLDVCVerifier } from "./jsonld.vc-verifier";
 import { BbsBlsSignature2020, Bls12381G2KeyPair } from "@mattrglobal/jsonld-signatures-bbs"
-import { Base, BaseConverter } from "@sovra/kms-core";
+import { Base, BaseConverter } from "@sovrahq/kms-core";
 import { InjectVerifier } from "../../../decorators/inject-verifier-decorator";
 
 ///Bbs2020VCVerifier Algorithm to verify Verifiable Credential. Use once instance for verification

@@ -1,5 +1,5 @@
 import { arrayify, hexlify } from "@ethersproject/bytes";
-import { IDidCommKeyPair, IDIDCommV2Suite, Suite, suiteDecorator, DIDCommMessageMediaType, DIDCommMessagePacking, IPackedDIDCommMessage, _DIDCommPlainMessage, _DIDCommEncryptedMessage, BaseConverter, Base, } from "@sovra/kms-core";
+import { IDidCommKeyPair, IDIDCommV2Suite, Suite, suiteDecorator, DIDCommMessageMediaType, DIDCommMessagePacking, IPackedDIDCommMessage, _DIDCommPlainMessage, _DIDCommEncryptedMessage, BaseConverter, Base, } from "@sovrahq/kms-core";
 // import { crypto_sign_keypair, sodium.from_hex } from 'wrappers';
 const _sodium = require("libsodium-wrappers");
 import {
@@ -35,7 +35,7 @@ import {
 import { ParsedDID } from "../models/parsed-did";
 import { IDIDCommMessage, IUnpackedDIDCommMessage } from "../models/didcomm-message-media-type";
 import { _DIDCommSignedMessage, _FlattenedJWS, _GenericJWS } from "../models/didcomm-signed-message";
-import { DIDDocument, VerificationMethodJwk } from "@sovra/did-core";
+import { DIDDocument, VerificationMethodJwk } from "@sovrahq/did-core";
 
 const PCT_ENCODED = '(?:%[0-9a-fA-F]{2})'
 const ID_CHAR = `(?:[a-zA-Z0-9._-]|${PCT_ENCODED})`

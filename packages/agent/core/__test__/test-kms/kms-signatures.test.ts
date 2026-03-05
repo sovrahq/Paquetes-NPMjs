@@ -1,4 +1,4 @@
-import { Suite } from '@sovra/kms-core';
+import { Suite } from '@sovrahq/kms-core';
 import { AgentModenaUniversalRegistry, AgentModenaUniversalResolver, DID } from '../../src';
 import { Agent } from '../../src/agent';
 import { VerifiyJWSResult } from '../../src/models/agent-kms';

@@ -1,4 +1,4 @@
-import { Purpose } from "@sovra/did-core";
+import { Purpose } from "@sovrahq/did-core";
 
 export interface Proof {
     type: string;

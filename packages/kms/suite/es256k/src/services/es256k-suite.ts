@@ -8,7 +8,7 @@ import {
   BaseConverter,
   IJWK,
   Base,
-} from "@sovra/kms-core";
+} from "@sovrahq/kms-core";
 import { ethers, wordlists, Wallet, utils } from "ethers";
 
 @suiteDecorator(Suite.ES256k)

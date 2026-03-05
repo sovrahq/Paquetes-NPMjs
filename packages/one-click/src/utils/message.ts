@@ -1,4 +1,4 @@
-import { DIDCommMessage } from "@sovra/did-core";
+import { DIDCommMessage } from "@sovrahq/did-core";
 import { OneClickThreadStorage } from "../storage/OneClickMessageStorage";
 
 export enum MessageTypes {

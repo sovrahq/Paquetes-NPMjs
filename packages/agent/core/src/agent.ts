@@ -1,5 +1,5 @@
-import { KMSClient } from "@sovra/kms-client";
-import { IKMS, LANG } from "@sovra/kms-core";
+import { KMSClient } from "@sovrahq/kms-client";
+import { IKMS, LANG } from "@sovrahq/kms-core";
 import { VCProtocolNotFoundError } from "./exceptions/vc-protocol-not-found";
 import { Messaging } from "./messaging/messaging";
 import { AgentIdentity } from "./models/agent-identity";

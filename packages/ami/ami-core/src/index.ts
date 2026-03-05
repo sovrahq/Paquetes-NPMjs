@@ -4,4 +4,4 @@ export { IMessageStorage, IMessageThreadStorage } from "./storage/IMessageStorag
 export { Guid } from "./utils/guid";
 export { MessageTypes , ContentType , ACKStatus , PlsACKOnValues} from "./message/enums"
 export { MessageBodyModel, StandardMessageBodyModel , ProblemReportBodyModel, Message , StandardMessage , AckMessage , ProblemReportMessage } from "./message/message";
-export { DIDCommMessage } from "@sovra/did-core";
+export { DIDCommMessage } from "@sovrahq/did-core";

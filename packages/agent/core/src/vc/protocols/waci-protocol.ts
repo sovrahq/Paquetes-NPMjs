@@ -1,10 +1,10 @@
-import { Issuer, UnsignedCredential, VerifiableCredential } from "@sovra/vc-core";
+import { Issuer, UnsignedCredential, VerifiableCredential } from "@sovrahq/vc-core";
 import {
     Actor, ClaimFormat, CredentialFulfillment, CredentialManifest, CredentialManifestStyles,
     DIDCommVersion, DisplayMappingObject, GoalCode, InputDescriptor, OutputDescriptor, PresentationDefinition,
     PresentationDefinitionFrame, WACIInterpreter, WACIMessage, WACIMessageType, validateVcByInputDescriptor,
     OfferCredentialMessageParams
-} from "@sovra/waci";
+} from "@sovrahq/waci";
 import { decode } from "base-64";
 import * as jsonpath from 'jsonpath';
 import * as jsonschema from 'jsonschema';

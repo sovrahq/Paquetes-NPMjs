@@ -1,6 +1,6 @@
-import { Service } from "@sovra/did-core"
-import { IJWK } from "@sovra/kms-core"
-import { DIDDocumentMetadata } from "@sovra/modena-sdk"
+import { Service } from "@sovrahq/did-core"
+import { IJWK } from "@sovrahq/kms-core"
+import { DIDDocumentMetadata } from "@sovrahq/modena-sdk"
 import { VerificationMethod } from "./interfaces";
 
 export type UpdateDIDRequest = {

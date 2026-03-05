@@ -1,11 +1,11 @@
-import { IJWK, IKMS, Suite } from "@sovra/kms-core";
-import { Did, ModenaUniversalRegistry } from "@sovra/did-registry";
-import { Purpose, Service } from "@sovra/did-core";
-import { ISigner, ModenaSdkConfig } from "@sovra/modena-sdk";
+import { IJWK, IKMS, Suite } from "@sovrahq/kms-core";
+import { Did, ModenaUniversalRegistry } from "@sovrahq/did-registry";
+import { Purpose, Service } from "@sovrahq/did-core";
+import { ISigner, ModenaSdkConfig } from "@sovrahq/modena-sdk";
 import { AgentModenaUniversalResolver } from "./agent-resolver";
-import { DIDUniversalResolver } from "@sovra/did-resolver";
+import { DIDUniversalResolver } from "@sovrahq/did-resolver";
 import { DID } from "./did";
-import { DIDDocumentMetadata } from "@sovra/modena-sdk";
+import { DIDDocumentMetadata } from "@sovrahq/modena-sdk";
 
 export abstract class IAgentRegistry {
     protected kms: IKMS;

@@ -1,4 +1,4 @@
-import { IJWK } from "@sovra/kms-core";
+import { IJWK } from "@sovrahq/kms-core";
 import ModenaSdkConfig from "../ModenaSdkConfig";
 import Multihash from "../Multihash";
 

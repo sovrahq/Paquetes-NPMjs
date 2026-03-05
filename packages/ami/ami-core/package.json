@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/ami-core",
+  "name": "@sovrahq/ami-core",
   "version": "0.1.2",
   "description": "",
   "main": "dist/index.js",
@@ -22,7 +22,7 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@sovra/did-core": "1.1.2"
+    "@sovrahq/did-core": "1.1.2"
   },
   "publishConfig": {
     "access": "public"

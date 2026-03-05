@@ -49,7 +49,7 @@ function checkPackageNames(dir) {
       const pkgPath = path.join(full, 'package.json');
       if (fs.existsSync(pkgPath)) {
         const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-        if (!pkg.name || !pkg.name.startsWith('@sovra/')) {
+        if (!pkg.name || !pkg.name.startsWith('@sovrahq/')) {
           console.error('Package without @quarkid scope:', pkgPath);
           process.exit(1);
         }

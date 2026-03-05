@@ -1,4 +1,4 @@
-import { VerifiableCredential } from "@sovra/vc-core";
+import { VerifiableCredential } from "@sovrahq/vc-core";
 import { DID } from "./did";
 
 export interface IVCStorage {

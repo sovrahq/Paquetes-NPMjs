@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { AgentSecureStorage } from '@sovra/agent';
+import { AgentSecureStorage } from '@sovrahq/agent';
 
 export class FileSystemAgentSecureStorage implements AgentSecureStorage {
     public readonly filepath: string;

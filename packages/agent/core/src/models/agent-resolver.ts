@@ -1,5 +1,5 @@
-import { DIDDocument } from "@sovra/did-core";
-import { DIDModenaResolver, DIDUniversalResolver, ModenaResponse } from "@sovra/did-resolver"
+import { DIDDocument } from "@sovrahq/did-core";
+import { DIDModenaResolver, DIDUniversalResolver, ModenaResponse } from "@sovrahq/did-resolver"
 import { DID } from "./did";
 
 export interface IAgentResolver {

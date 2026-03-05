@@ -1,5 +1,5 @@
-import { DIDDocumentUtils, VerificationMethod, VerificationMethodJwk, VerificationMethodTypes } from "@sovra/did-core";
-import { IJWK, IKMS, Suite } from "@sovra/kms-core";
+import { DIDDocumentUtils, VerificationMethod, VerificationMethodJwk, VerificationMethodTypes } from "@sovrahq/did-core";
+import { IJWK, IKMS, Suite } from "@sovrahq/kms-core";
 import { AgentIdentity } from "./agent-identity";
 import { IAgentResolver } from "./agent-resolver";
 import { DID } from "./did";

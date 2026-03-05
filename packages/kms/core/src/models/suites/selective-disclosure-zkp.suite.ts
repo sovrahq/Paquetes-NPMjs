@@ -1,5 +1,5 @@
-import { DIDDocument } from "@sovra/did-core";
-import { VerifiableCredential } from "@sovra/vc-core";
+import { DIDDocument } from "@sovrahq/did-core";
+import { VerifiableCredential } from "@sovrahq/vc-core";
 import { IVCSuite } from "./vc.suite";
 
 export interface SelectiveDisclosureZKPSuite extends IVCSuite {

@@ -1,2 +1,2 @@
-export { BaseConverter, Base } from "@sovra/kms-core";
+export { BaseConverter, Base } from "@sovrahq/kms-core";
 export { KMSClient } from "./services/kms-client";

@@ -2,8 +2,8 @@ import {
   AssertionMethodPurpose,
   AuthenticationPurpose,
   KeyAgreementPurpose,
-} from '@sovra/did-core';
-import { Base, BaseConverter, IJWK, IKeyPair, IKMS, Suite } from '@sovra/kms-core';
+} from '@sovrahq/did-core';
+import { Base, BaseConverter, IJWK, IKeyPair, IKMS, Suite } from '@sovrahq/kms-core';
 import {
   IdentityDataShareBehavior,
   IdentityExportResult,
@@ -19,7 +19,7 @@ import {
 import { IAgentResolver } from './agent-resolver';
 import { IAgentStorage } from './agent-storage';
 import { DID } from './did';
-import { UpdateCommitmentUtils } from "@sovra/modena-sdk";
+import { UpdateCommitmentUtils } from "@sovrahq/modena-sdk";
 
 const AGENT_DID_KEY = 'agent-did';
 const OPERATIONAL_DID_KEY = 'operational-did';

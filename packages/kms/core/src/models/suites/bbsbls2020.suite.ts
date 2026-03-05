@@ -1,5 +1,5 @@
 import { IKeyPair } from "../keypair";
-import { Purpose } from "@sovra/did-core";
+import { Purpose } from "@sovrahq/did-core";
 import { IVCJsonLDKeyPair, IVCSuite } from "./vc.suite";
 
 export interface IBbsBls2020Suite extends IVCSuite {

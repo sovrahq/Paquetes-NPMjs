@@ -1,6 +1,6 @@
-import { Service } from "@sovra/did-core";
-import { IJWK } from "@sovra/kms-core";
-import { DIDDocumentMetadata, ModenaRequest, ModenaSdkConfig } from "@sovra/modena-sdk";
+import { Service } from "@sovrahq/did-core";
+import { IJWK } from "@sovrahq/kms-core";
+import { DIDDocumentMetadata, ModenaRequest, ModenaSdkConfig } from "@sovrahq/modena-sdk";
 import fetch from "node-fetch";
 import { CreateDIDResponse } from "../models/create-did.response";
 import { VerificationMethod } from "../models/interfaces";

@@ -1,5 +1,5 @@
-import { DIDCommMessage, DIDDocumentUtils, VerificationMethodJwk, VerificationMethodTypes } from "@sovra/did-core";
-import { Base, BaseConverter, DIDCommMessagePacking, DIDCommPackedMessage, IDIDCommMessage, IJWK, IKMS, Suite } from "@sovra/kms-core";
+import { DIDCommMessage, DIDDocumentUtils, VerificationMethodJwk, VerificationMethodTypes } from "@sovrahq/did-core";
+import { Base, BaseConverter, DIDCommMessagePacking, DIDCommPackedMessage, IDIDCommMessage, IJWK, IKMS, Suite } from "@sovrahq/kms-core";
 import { AgentIdentity } from "../models/agent-identity";
 import { IAgentRegistry } from "../models/agent-registry";
 import { IAgentResolver } from "../models/agent-resolver";

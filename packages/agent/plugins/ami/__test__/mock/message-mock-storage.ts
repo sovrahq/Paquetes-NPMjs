@@ -1,4 +1,4 @@
-import { Message , IMessageStorage , IMessageThreadStorage } from "@sovra/ami-sdk";
+import { Message , IMessageStorage , IMessageThreadStorage } from "@sovrahq/ami-sdk";
 
 
 

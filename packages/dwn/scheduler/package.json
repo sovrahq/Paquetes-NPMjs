@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/dwn-client-scheduler",
+  "name": "@sovrahq/dwn-client-scheduler",
   "version": "1.1.2",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -27,7 +27,7 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "@sovra/dwn-client": "^1.2.2",
+    "@sovrahq/dwn-client": "^1.2.2",
     "node-cron": "^3.0.0"
   },
   "publishConfig": {

@@ -1,6 +1,6 @@
-import { IssuerData, VerifiableCredentialWithInfo } from "@sovra/agent/src/vc/protocols/waci-protocol";
-import { VerifiableCredential } from "@sovra/vc-core";
-import { WACIMessage } from "@sovra/waci";
+import { IssuerData, VerifiableCredentialWithInfo } from "@sovrahq/agent/src/vc/protocols/waci-protocol";
+import { VerifiableCredential } from "@sovrahq/vc-core";
+import { WACIMessage } from "@sovrahq/waci";
 import { Agent } from "../../agent";
 import { DID } from "../../models/did";
 import { LiteEvent } from "../../utils/lite-event";

@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/kms-storage-vault",
+  "name": "@sovrahq/kms-storage-vault",
   "version": "1.6.3",
   "description": "",
   "main": "dist/src/index.js",
@@ -21,9 +21,9 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@sovra/did-core": "1.1.2",
-    "@sovra/kms-core": "^1.4.0-4",
-    "@sovra/vc-core": "1.1.0-2",
+    "@sovrahq/did-core": "1.1.2",
+    "@sovrahq/kms-core": "^1.4.0-4",
+    "@sovrahq/vc-core": "1.1.0-2",
     "hashi-vault-js": "0.4.11",
     "ts-jest": "^28.0.1"
   },

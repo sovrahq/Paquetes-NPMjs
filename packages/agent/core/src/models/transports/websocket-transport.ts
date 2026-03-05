@@ -1,5 +1,5 @@
-import { DIDDocumentUtils } from '@sovra/did-core';
-import { IPackedDIDCommMessage } from '@sovra/kms-core';
+import { DIDDocumentUtils } from '@sovrahq/did-core';
+import { IPackedDIDCommMessage } from '@sovrahq/kms-core';
 import { Socket as ServerSocket } from 'socket.io';
 import { Socket as ClientSocket } from 'socket.io-client';
 import { Agent } from '../../agent';

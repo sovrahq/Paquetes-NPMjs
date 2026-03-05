@@ -1,5 +1,5 @@
-import { Agent, DID, IAgentPlugin, IAgentPluginMessage, IAgentPluginResponse, ITransport } from "@sovra/agent";
-import { DIDCommMessage } from "@sovra/ami-core";
+import { Agent, DID, IAgentPlugin, IAgentPluginMessage, IAgentPluginResponse, ITransport } from "@sovrahq/agent";
+import { DIDCommMessage } from "@sovrahq/ami-core";
 import { AMISDK, IEncoder, IStorage, MessageStorage } from "../../src";
 
 

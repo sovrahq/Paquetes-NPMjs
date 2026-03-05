@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/one-click-agent-plugin",
+  "name": "@sovrahq/one-click-agent-plugin",
   "version": "0.3.2",
   "description": "One Click Agent Plugin",
   "main": "dist/index.js",
@@ -21,14 +21,14 @@
     "typescript": "^4.5.4"
   },
   "peerDependencies": {
-    "@sovra/agent": "0.10.0-7"
+    "@sovrahq/agent": "0.10.0-7"
   },
   "dependencies": {
-    "@sovra/did-core": "1.1.2",
-    "@sovra/kms-client": "1.4.0-4",
-    "@sovra/kms-core": "1.4.0-4",
-    "@sovra/oneclick-sdk": "0.3.3",
-    "@sovra/vc-core": "1.1.0-2"
+    "@sovrahq/did-core": "1.1.2",
+    "@sovrahq/kms-client": "1.4.0-4",
+    "@sovrahq/kms-core": "1.4.0-4",
+    "@sovrahq/oneclick-sdk": "0.3.3",
+    "@sovrahq/vc-core": "1.1.0-2"
   },
   "publishConfig": {
     "access": "public"

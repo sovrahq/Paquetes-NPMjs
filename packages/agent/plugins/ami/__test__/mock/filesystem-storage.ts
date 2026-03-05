@@ -1,5 +1,5 @@
 import { accessSync, readFileSync, writeFileSync, existsSync , constants} from 'fs';
-import { IStorage } from '@sovra/ami-sdk';
+import { IStorage } from '@sovrahq/ami-sdk';
 
 export class FileSystemStorage implements IStorage {
     public readonly filepath: string;

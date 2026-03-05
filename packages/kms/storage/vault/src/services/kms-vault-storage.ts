@@ -1,4 +1,4 @@
-import { KMSStorage } from "@sovra/kms-core";
+import { KMSStorage } from "@sovrahq/kms-core";
 import * as Vault from "hashi-vault-js";
 
 type LoginWithAppRoleResponse = {

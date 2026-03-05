@@ -1,11 +1,11 @@
 
 import { Message, Guid ,
     AMICore , IMessageStorage , MessageTypes, StandardMessageBodyModel,
-     AckMessage, StandardMessage, ACKStatus, PlsACKOnValues, ContentType, ProblemReportMessage, ProblemReportBodyModel } from "@sovra/ami-core";
+     AckMessage, StandardMessage, ACKStatus, PlsACKOnValues, ContentType, ProblemReportMessage, ProblemReportBodyModel } from "@sovrahq/ami-core";
 import { IStorage } from "./storage/storage";
 import { IChat, IChatStorage } from "./storage/IChatStorage";
 import { ChatStorage } from "./storage/ChatStorage";
-import { DIDCommPackedMessage } from "@sovra/kms-core";
+import { DIDCommPackedMessage } from "@sovrahq/kms-core";
 import { StandardEncoder } from "./encoders/StandardEncoder"
 import { IEncoder } from "./encoders/IEncoder";
 import { isBase64String } from "./encoders/utils";

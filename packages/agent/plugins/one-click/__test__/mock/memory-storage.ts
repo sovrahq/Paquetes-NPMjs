@@ -1,4 +1,4 @@
-import { AgentSecureStorage, IAgentStorage } from "@sovra/agent";
+import { AgentSecureStorage, IAgentStorage } from "@sovrahq/agent";
 
 export class MemoryStorage implements IAgentStorage {
     mapper: Map<string, any> = new Map();

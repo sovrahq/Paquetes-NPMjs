@@ -1,4 +1,4 @@
-import {Message } from "@sovra/ami-core"
+import {Message } from "@sovrahq/ami-core"
 
 export enum IncomingChatMessageStatus {
     NOTIFICATION = 'incoming/notification',

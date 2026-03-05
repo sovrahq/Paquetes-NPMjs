@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/did-resolver",
+  "name": "@sovrahq/did-resolver",
   "version": "1.4.6",
   "description": "",
   "main": "dist/index.js",
@@ -20,7 +20,7 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@sovra/did-core": "1.1.2",
+    "@sovrahq/did-core": "1.1.2",
     "axios": "^0.27.2",
     "reflect-metadata": "^0.1.13"
   },

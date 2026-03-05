@@ -2,10 +2,10 @@ import fetch from "node-fetch";
 import { PublishDIDResponse } from "../models/publish-did.response";
 import { ModenaRegistryBase } from "./modena-registry.service";
 import { PublishDIDRequest } from "../models/publish-did-request";
-import { DIDDocumentMetadata, ModenaPublicKeyPurpose, ModenaRequest } from "@sovra/modena-sdk";
-import { IJWK } from "@sovra/kms-core";
+import { DIDDocumentMetadata, ModenaPublicKeyPurpose, ModenaRequest } from "@sovrahq/modena-sdk";
+import { IJWK } from "@sovrahq/kms-core";
 import { VerificationMethod } from "../models/interfaces";
-import { Service } from "@sovra/did-core";
+import { Service } from "@sovrahq/did-core";
 import { UpdateDIDRequest } from "../models/update-did-request";
 
 export class ModenaDidPublishRequest extends PublishDIDRequest {

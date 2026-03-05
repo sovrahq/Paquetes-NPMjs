@@ -7,7 +7,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: [".eslintrc.js", "packages/@sovra/**"],
+  ignorePatterns: [".eslintrc.js", "packages/@sovrahq/**"],
   rules: {
     // Import - Export rules
     "unused-imports/no-unused-imports": "error",

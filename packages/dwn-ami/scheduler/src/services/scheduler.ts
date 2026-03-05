@@ -1,4 +1,4 @@
-import { DWNClient } from '@sovra/dwn-client';
+import { DWNClient } from '@sovrahq/dwn-client';
 import { schedule as scheduleTask, ScheduledTask } from 'node-cron';
 
 export class DWNClientScheduler {

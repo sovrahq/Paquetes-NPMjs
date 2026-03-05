@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/kms-core",
+  "name": "@sovrahq/kms-core",
   "version": "1.4.0-4",
   "description": "",
   "main": "dist/index.js",
@@ -20,12 +20,12 @@
     "typescript": "^4.5.4"
   },
   "peerDependencies": {
-    "@sovra/did-core": "1.1.2",
-    "@sovra/vc-core": "1.1.0-2"
+    "@sovrahq/did-core": "1.1.2",
+    "@sovrahq/vc-core": "1.1.0-2"
   },
   "dependencies": {
-    "@sovra/did-core": "1.1.2",
-    "@sovra/vc-core": "1.1.0-2",
+    "@sovrahq/did-core": "1.1.2",
+    "@sovrahq/vc-core": "1.1.0-2",
     "base64url": "^3.0.1",
     "bs58": "^5.0.0",
     "did-jwt": "^6.11.0",

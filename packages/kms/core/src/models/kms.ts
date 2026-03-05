@@ -1,5 +1,5 @@
-import { DIDCommMessage, Purpose } from "@sovra/did-core";
-import { VerifiableCredential } from "@sovra/vc-core";
+import { DIDCommMessage, Purpose } from "@sovrahq/did-core";
+import { VerifiableCredential } from "@sovrahq/vc-core";
 import { IJWK } from "../utils/base-converter";
 import { IKeyPair } from "./keypair";
 import { DIDCommMessagePacking, IDIDCommMessage, IPackedDIDCommMessage } from "./suites/didcomm/didcomm-message-media-type";

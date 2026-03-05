@@ -4,7 +4,7 @@ import ModenaSdkConfig from './ModenaSdkConfig';
 import JsonCanonicalizer from './JsonCanonicalizer';
 import Multihash from './Multihash';
 import ModenaDocumentModel from './models/ModenaDocumentModel';
-import { IJWK } from '@sovra/kms-core';
+import { IJWK } from '@sovrahq/kms-core';
 
 /**
  * Class containing DID related operations.

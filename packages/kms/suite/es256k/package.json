@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/kms-suite-es256k",
+  "name": "@sovrahq/kms-suite-es256k",
   "version": "1.2.4",
   "description": "",
   "main": "dist/index.js",
@@ -20,9 +20,9 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@sovra/did-core": "1.1.2",
-    "@sovra/kms-core": "^1.4.0-4",
-    "@sovra/vc-core": "1.1.0-2",
+    "@sovrahq/did-core": "1.1.2",
+    "@sovrahq/kms-core": "^1.4.0-4",
+    "@sovrahq/vc-core": "1.1.0-2",
     "@transmute/did-key-secp256k1": "^0.2.1-unstable.35",
     "@transmute/es256k-jws-ts": "^0.1.3",
     "@types/webassembly-js-api": "^0.0.2",

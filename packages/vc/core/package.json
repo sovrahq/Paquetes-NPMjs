@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/vc-core",
+  "name": "@sovrahq/vc-core",
   "version": "1.1.0-2",
   "description": "",
   "main": "dist/index.js",
@@ -20,7 +20,7 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@sovra/did-core": "1.1.2",
+    "@sovrahq/did-core": "1.1.2",
     "jsonld": "^5.2.0"
   },
   "publishConfig": {

@@ -6,11 +6,11 @@ import {
   IAgentPluginResponse,
   IStatusListAgentPlugin,
   IStatusListPluginMessage,
-} from '@sovra/agent';
+} from '@sovrahq/agent';
 import { QuarkIDCredentialStatus, PersistanceType } from '../models/quarkid-credential-status';
 import axios from "axios";
 import { BitArray } from '../models/bit-array';
-import { IStorage } from '@sovra/agent/dist/models/agent-storage';
+import { IStorage } from '@sovrahq/agent/dist/models/agent-storage';
 
 export class ExtrimianStatusListAgentPlugin implements IStatusListAgentPlugin {
   private agent: Agent;

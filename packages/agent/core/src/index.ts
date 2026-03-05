@@ -1,4 +1,4 @@
-export { VerifiableCredential } from "@sovra/vc-core";
+export { VerifiableCredential } from "@sovrahq/vc-core";
 export { Agent } from "./agent";
 export { DataShareBehavior } from "./data-share-behaviours/data-share-behavior";
 export { IdentityDataShareBehavior, IdentityExportParams, IdentityExportResult } from "./data-share-behaviours/identity-data-share-behavior";
@@ -42,5 +42,5 @@ export {
 export { VerifiableCredentialWithInfo, SelectiveDisclosure } from "./vc/protocols/waci-protocol";
 export { ConnectableTransport } from "./models/transports/connectable-transport";
 
-export { CredentialManifestStyles, InputDescriptor, WACIMessage } from "@sovra/waci";
-export { Issuer } from "@sovra/vc-core";
+export { CredentialManifestStyles, InputDescriptor, WACIMessage } from "@sovrahq/waci";
+export { Issuer } from "@sovrahq/vc-core";

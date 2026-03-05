@@ -1,5 +1,5 @@
 {
-  "name": "@sovra/vc-verifier",
+  "name": "@sovrahq/vc-verifier",
   "version": "1.2.0-2",
   "description": "",
   "main": "dist/index.js",
@@ -21,9 +21,9 @@
   },
   "dependencies": {
     "@mattrglobal/jsonld-signatures-bbs": "1.1.0",
-    "@sovra/did-core": "1.1.2",
-    "@sovra/kms-core": "^1.4.0-4",
-    "@sovra/vc-core": "^1.1.0-2",
+    "@sovrahq/did-core": "1.1.2",
+    "@sovrahq/kms-core": "^1.4.0-4",
+    "@sovrahq/vc-core": "^1.1.0-2",
     "axios": "^0.27.2",
     "jsonld": "3.1.0",
     "jsonld-document-loader": "1.2.1",

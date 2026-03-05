@@ -1,7 +1,7 @@
-// import { VerifiableCredential } from "@sovra/vc-core";
-import { DIDCommPackedMessage } from "@sovra/kms-core";
-import { VerifiableCredential } from "@sovra/vc-core";
-import { InputDescriptor } from "@sovra/waci";
+// import { VerifiableCredential } from "@sovrahq/vc-core";
+import { DIDCommPackedMessage } from "@sovrahq/kms-core";
+import { VerifiableCredential } from "@sovrahq/vc-core";
+import { InputDescriptor } from "@sovrahq/waci";
 import { AgentModenaUniversalRegistry, AgentModenaUniversalResolver, DID } from "../src";
 import { Agent } from "../src/agent";
 import { VerifiableCredentialWithInfo, WACIProtocol } from "../src/vc/protocols/waci-protocol";

@@ -1,8 +1,8 @@
-import { DIDDocument, Purpose } from "@sovra/did-core";
+import { DIDDocument, Purpose } from "@sovrahq/did-core";
 import { verifiers } from "../decorators/inject-verifier-decorator";
-import { VerifiableCredential } from "@sovra/vc-core";
+import { VerifiableCredential } from "@sovrahq/vc-core";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { CredentialStatusType } from "@sovra/vc-core";
+import { CredentialStatusType } from "@sovrahq/vc-core";
 import {
   CredentialStatusServiceError,
   DIDDocumentResolutionError,

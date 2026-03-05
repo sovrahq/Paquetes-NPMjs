@@ -4,11 +4,11 @@ import {
   IAgentPlugin,
   IAgentPluginMessage,
   IAgentPluginResponse,
-} from '@sovra/agent';
-import { MessageTypes, OneClickMessage, OneClickSDK } from '@sovra/oneclick-sdk';
+} from '@sovrahq/agent';
+import { MessageTypes, OneClickMessage, OneClickSDK } from '@sovrahq/oneclick-sdk';
 import { decode } from 'base-64';
 import { LiteEvent } from '../events/lite-event';
-import { IStorage } from '@sovra/did-core';
+import { IStorage } from '@sovrahq/did-core';
 
 export class OneClickPlugin implements IAgentPlugin {
   private agent: Agent;

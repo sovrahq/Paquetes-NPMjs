@@ -1,5 +1,5 @@
 import { DIDComm } from "@hearro/didcomm";
-import { IDidCommKeyPair, Suite, suiteDecorator } from "@sovra/kms-core";
+import { IDidCommKeyPair, Suite, suiteDecorator } from "@sovrahq/kms-core";
 // import { crypto_sign_keypair, sodium.from_hex } from 'wrappers';
 const _sodium = require("libsodium-wrappers");
 

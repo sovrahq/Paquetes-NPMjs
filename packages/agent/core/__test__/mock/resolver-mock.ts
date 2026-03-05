@@ -1,5 +1,5 @@
-import { DIDDocument } from "@sovra/did-core";
-import { ModenaResponse } from "@sovra/did-resolver";
+import { DIDDocument } from "@sovrahq/did-core";
+import { ModenaResponse } from "@sovrahq/did-resolver";
 import { DID, IAgentResolver } from "../../src";
 
 export class ResolverMock implements IAgentResolver {
