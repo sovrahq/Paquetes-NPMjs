@@ -240,18 +240,34 @@ export class VC {
         purpose?: Purpose,
         did?: DID,
     }) {
-        const verificationMethod = await this.getValidVerificationMethodSigner({
-            suiteType: Suite.RsaSignature2018,
-            publicKey: params.publicKey,
-            did: params.did || this.identity.getOperationalDID()
-        });
+        const did = params.did || this.identity.getOperationalDID();
+
+        // Try RSA first, fallback to Ed25519 if no RSA keys available
+        let verificationMethod: any;
+        const suitesToTry = [Suite.RsaSignature2018, Suite.Ed25519Suite];
+        for (const suite of suitesToTry) {
+            try {
+                verificationMethod = await this.getValidVerificationMethodSigner({
+                    suiteType: suite,
+                    publicKey: params.publicKey,
+                    did,
+                });
+                break;
+            } catch {
+                // Try next suite
+            }
+        }
+
+        if (!verificationMethod) {
+            throw new Error("No valid signing keys found for presentation (tried RSA, Ed25519)");
+        }
 
         const signature = await this.kms.signVCPresentation({
-            did: (params.did || this.identity.getOperationalDID()).value,
+            did: did.value,
             presentationObject: params.contentToSign,
             publicKeyJWK: verificationMethod.publicKeyJwk as IJWK,
             purpose: params.purpose || new AuthenticationPurpose({ challenge: params.challenge }),
-            verificationMethodId: (params.did || this.identity.getOperationalDID()).value + verificationMethod.id
+            verificationMethodId: did.value + verificationMethod.id
         });
 
         return signature;
@@ -400,7 +416,14 @@ export class VC {
 
         const didDocument = await this.resolver.resolve(params.did);
 
-        const validPublicKeys = didDocument.verificationMethod.filter(x => x.type == getTypeBySuite(params.suiteType)) as VerificationMethodJwk[];
+        const expectedType = getTypeBySuite(params.suiteType);
+        const validPublicKeys = didDocument.verificationMethod.filter(x => {
+            // Match by type
+            if (x.type === expectedType) return true;
+            // For Ed25519: also match by crv when type is misregistered (e.g. Bls12381G1Key2020 with crv Ed25519)
+            if (params.suiteType === Suite.Ed25519Suite && (x as any).publicKeyJwk?.crv === 'Ed25519') return true;
+            return false;
+        }) as VerificationMethodJwk[];
 
         //Comienzo a comparar las claves que estan en el DID Document con las que tiene el KMS hasta encontrar un match
         const firstValidPbk = validPublicKeys.find(didDocKey => {

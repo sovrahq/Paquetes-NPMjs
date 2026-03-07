@@ -243,9 +243,9 @@ export const extractExpectedChallenge = (
 };
 
 export const validateVcByInputDescriptor = (vc, inputDescriptor): boolean => {
+  if (!vc || !inputDescriptor?.constraints?.fields) return false;
   // SD-JWT: validate disclosed claims against required fields
   if (typeof vc === 'string') {
-    if (!inputDescriptor.constraints?.fields) return true;
     const disclosedClaims = extractSDJWTClaims(vc);
     for (const field of inputDescriptor.constraints.fields) {
       const pathKey = extractClaimKeyFromPath(field.path[0]);
@@ -253,9 +253,16 @@ export const validateVcByInputDescriptor = (vc, inputDescriptor): boolean => {
     }
     return true;
   }
+  // Handle wrapper objects {data, styles, display} - extract the actual VC
+  const actualVc = (vc && typeof vc === 'object' && 'data' in vc && vc.data) ? vc.data : vc;
+  if (typeof actualVc !== 'object') return false;
   for (const field of inputDescriptor.constraints.fields) {
     const fieldValues = field.path?.map((path) => {
-      return jsonpath.value(vc, path);
+      try {
+        return jsonpath.value(actualVc, path);
+      } catch {
+        return undefined;
+      }
     });
 
     for (const value of fieldValues) {

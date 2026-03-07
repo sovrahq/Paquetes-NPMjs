@@ -1,3 +1,4 @@
+import { isNil } from 'lodash';
 import { RegisterHandler } from '../decorators/register-handler.decorator';
 import {
   AckStatus,
@@ -19,12 +20,22 @@ export class IssueCredentialHandler implements WACIMessageHandler {
   ): Promise<WACIMessageHandlerResponse> {
     const message = messageThread[messageThread.length - 1];
 
+    // Extract credential manifest from the OfferCredential message in the thread
+    // This is needed because the holder may not have the manifest stored (e.g., DWN message replay)
+    const offerMessage = messageThread.find(
+      (m) => m.type === WACIMessageType.OfferCredential,
+    );
+    const threadManifests = offerMessage?.attachments?.filter(
+      (a) => !isNil(a?.data?.json?.credential_manifest),
+    );
+
     const problemReport = new ProblemReportMessage();
     const fulfillmentAcceptance = await callbacks[
       Actor.Holder
     ].handleCredentialFulfillment({
       message,
-      credentialFulfillment: message.attachments
+      credentialFulfillment: message.attachments,
+      threadManifests,
     });
     const holderDID = message.to[0];
     const issuerDID = message.from;

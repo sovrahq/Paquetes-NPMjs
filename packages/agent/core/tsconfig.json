@@ -8,6 +8,7 @@
       "node",
       "jest"
     ],
+    "rootDir": "src",
     "outDir": "dist",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -17,5 +18,7 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": false,
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src"],
+  "exclude": ["__test__"]
 }

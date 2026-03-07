@@ -207,7 +207,13 @@ export class KMSClient implements IKMS {
     verificationMethodId: string,
     purpose: Purpose
   }) {
-    const suiteType = this.suites.get(Suite.RsaSignature2018);
+    // Detect suite based on key type — Ed25519 keys can't use RSA suite
+    let suiteName = Suite.RsaSignature2018;
+    if ((params.publicKeyJWK as any)?.crv === 'Ed25519' || (params.publicKeyJWK as any)?.kty === 'OKP') {
+      suiteName = Suite.Ed25519Suite;
+    }
+
+    const suiteType = this.suites.get(suiteName) || this.suites.get(Suite.RsaSignature2018);
 
     if (!suiteType) {
       throw new Error("Unsupported Suite");

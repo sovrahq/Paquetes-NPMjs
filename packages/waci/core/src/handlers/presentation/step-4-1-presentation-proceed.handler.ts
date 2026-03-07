@@ -82,11 +82,18 @@ export class PresentationProceed {
       verifiableCredential: credentialsToPresent,
     };
 
-    const signedData = await callbacks[Actor.Holder].signPresentation({
-      contentToSign: messageData,
-      challenge,
-      message
-    });
+    // SD-JWT credentials don't need VP signing — the JWT signature is sufficient
+    const allSDJWT = credentialsToPresent.every(vc => typeof vc === 'string');
+    let signedData;
+    if (allSDJWT) {
+      signedData = messageData;
+    } else {
+      signedData = await callbacks[Actor.Holder].signPresentation({
+        contentToSign: messageData,
+        challenge,
+        message
+      });
+    }
 
     return {
       id: createUUID(),

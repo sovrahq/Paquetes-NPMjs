@@ -196,8 +196,14 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                     if (this.credentialApplication) {
                         // Map the credential descriptors to the actual credentials
                         const credential_manifests = await this.storage.get<CredentialManifestData[]>(InternalStorageEnum.CredentialManifests);
-                        if (!credential_manifests?.find(x => x.id == p.manifest.data.json.credential_manifest.id)) {
+                        const manifestId = p.manifest.data.json.credential_manifest.id;
+                        console.log('[WACI-OFFER] Storing manifest with id:', manifestId);
+                        console.log('[WACI-OFFER] Existing manifests:', credential_manifests?.map(x => x.id) || 'none');
+                        if (!credential_manifests?.find(x => x.id == manifestId)) {
                             await this.storage.add(InternalStorageEnum.CredentialManifests, credential_manifests ? [...credential_manifests, p.manifest.data.json.credential_manifest] : [p.manifest.data.json.credential_manifest]);
+                            console.log('[WACI-OFFER] ✅ Manifest stored successfully');
+                        } else {
+                            console.log('[WACI-OFFER] ⏭️ Manifest already exists, skipping');
                         }
 
                         // Map the credential descriptors to the actual credentials
@@ -297,13 +303,27 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
 
                         // Get the credentials from the agent
                         const credentials = await this.agent.vc.getVerifiableCredentialsWithInfo();
+                        console.log(`[WACI-PRESENT] Total stored credentials: ${credentials?.length || 0}`);
+                        credentials?.forEach((c, i) => {
+                            const dataType = typeof c?.data;
+                            const isString = dataType === 'string';
+                            console.log(`[WACI-PRESENT] Credential[${i}]: type=${dataType}, isSDJWT=${isString}, hasStyles=${!!c?.styles}, hasDisplay=${!!c?.display}`);
+                            if (isString) {
+                                console.log(`[WACI-PRESENT] Credential[${i}] SD-JWT preview: ${(c.data as any).substring(0, 80)}...`);
+                            } else if (c?.data && typeof c.data === 'object') {
+                                console.log(`[WACI-PRESENT] Credential[${i}] type: ${JSON.stringify((c.data as any)?.type)}`);
+                            }
+                        });
 
                         // Filter the credentials based on the input descriptors
                         const inputs = (p.inputDescriptors || []).map((descriptor) => {
+                            console.log(`[WACI-PRESENT] Checking descriptor: ${descriptor.id}, fields: ${descriptor.constraints?.fields?.map(f => f.path[0]).join(', ')}`);
                             return {
                                 descriptor,
                                 credentials: (credentials || []).reduce((acc, credential) => {
-                                    if (this.validateSchema(credential.data, descriptor)) {
+                                    const matches = this.validateSchema(credential.data, descriptor);
+                                    console.log(`[WACI-PRESENT] validateSchema result: ${matches} for credential type=${typeof credential.data}`);
+                                    if (matches) {
                                         acc.push(credential);
                                     }
                                     return acc;
@@ -348,11 +368,47 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                         }
                     }
                 },
-                handleCredentialFulfillment: async (p: { credentialFulfillment: CredentialFulfillment[], message: WACIMessage }) => {
+                handleCredentialFulfillment: async (p: { credentialFulfillment: CredentialFulfillment[], message: WACIMessage, threadManifests?: any[] }) => {
 
                     const credentialManifests = await this.storage.get<CredentialManifestData[]>(InternalStorageEnum.CredentialManifests);
-                    const credentialManifest = credentialManifests.find(x => x.id === p.credentialFulfillment[0].data.json.credential_fulfillment.manifest_id);
-                    await this.storage.add(InternalStorageEnum.CredentialManifests, credentialManifests.filter(x => x.id !== p.credentialFulfillment[0].data.json.credential_fulfillment.manifest_id));
+                    const fulfillmentManifestId = p.credentialFulfillment[0]?.data?.json?.credential_fulfillment?.manifest_id;
+
+                    let credentialManifest = credentialManifests?.find(x => x.id === fulfillmentManifestId);
+
+                    // Fallback: if not in storage, try to get from the WACI message thread
+                    if (!credentialManifest && p.threadManifests?.length) {
+                        const threadManifest = p.threadManifests.find(
+                            (m: any) => m?.data?.json?.credential_manifest?.id === fulfillmentManifestId
+                        );
+                        if (threadManifest) {
+                            console.log('[WACI-FULFILL] Using manifest from message thread (not found in storage)');
+                            credentialManifest = threadManifest.data.json.credential_manifest;
+                        }
+                    }
+
+                    // Last resort fallback: extract credentials directly from fulfillment
+                    if (!credentialManifest) {
+                        console.warn('[WACI-FULFILL] No manifest found in storage or thread, extracting from fulfillment directly');
+                        const fulfillment = p.credentialFulfillment[0]?.data?.json;
+                        if (fulfillment?.credential_fulfillment?.descriptor_map && fulfillment?.verifiableCredential) {
+                            const credentials = fulfillment.credential_fulfillment.descriptor_map.map(
+                                (desc: any) => ({
+                                    data: jsonpath.value(fulfillment, desc.path) as VerifiableCredential,
+                                    styles: undefined,
+                                    display: undefined,
+                                })
+                            );
+                            this.onVcArrived.trigger({ credentials, issuer: undefined, messageId: p.message?.id });
+                            return true;
+                        }
+                        console.warn(`[WACI-FULFILL] No credential manifest found for manifest_id: ${fulfillmentManifestId}, skipping (likely DWN replay)`);
+                        return false;
+                    }
+
+                    // Clean up stored manifests
+                    if (credentialManifests?.length) {
+                        await this.storage.add(InternalStorageEnum.CredentialManifests, credentialManifests.filter(x => x.id !== fulfillmentManifestId));
+                    }
 
                     const credentials = credentialManifest.output_descriptors.map(
                         (descriptor) => {
@@ -424,11 +480,19 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                     });
                 },
                 verifyCredential: async (vc: VerifiableCredential) => {
+                    console.log('[WACI-VERIFY] 🔵 verifyCredential called, vc type:', typeof vc, 'hasCustomVerify:', !!this.customVerifyCredential);
+                    if (typeof vc === 'string') {
+                        console.log('[WACI-VERIFY] SD-JWT vc preview:', (vc as string).substring(0, 80) + '...');
+                    }
                     let result;
                     if (this.customVerifyCredential) {
+                        console.log('[WACI-VERIFY] 🔵 Calling customVerifyCredential...');
                         result = await this.customVerifyCredential(vc);
+                        console.log('[WACI-VERIFY] ✅ customVerifyCredential result:', result);
                     } else {
+                        console.log('[WACI-VERIFY] 🔵 Calling agent.vc.verifyVC...');
                         result = await this.agent.vc.verifyVC({ vc: vc });
+                        console.log('[WACI-VERIFY] ✅ verifyVC result:', result);
                     }
 
                     this.onVcVerified.trigger({
@@ -573,9 +637,20 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
 
 
     private validateSchema = (vc: VerifiableCredential, inputDescriptor: InputDescriptor) => {
+        if (!vc) return false;
+        // SD-JWT credentials are strings — delegate to validateVcByInputDescriptor which handles them
+        if (typeof vc === 'string') {
+            return validateVcByInputDescriptor(vc, inputDescriptor);
+        }
+        if (typeof vc !== 'object') return false;
+        if (!inputDescriptor?.constraints?.fields) return true;
         for (const field of inputDescriptor.constraints.fields) {
             const fieldValues = field.path?.map((path) => {
-                return jsonpath.value(vc, path);
+                try {
+                    return jsonpath.value(vc, path);
+                } catch {
+                    return undefined;
+                }
             });
 
             for (const value of fieldValues) {

@@ -15,8 +15,10 @@ export enum VCSuite {
 export function getTypeBySuite(suite: Suite) {
     switch (suite) {
         case Suite.DIDComm: return "X25519KeyAgreementKey2019";
+        case Suite.DIDCommV2: return "X25519KeyAgreementKey2019";
         case Suite.Bbsbls2020: return "Bls12381G1Key2020";
         case Suite.RsaSignature2018: return "RsaSignature2018";
+        case Suite.Ed25519Suite: return "Ed25519VerificationKey2018";
     }
     return null;
 }
