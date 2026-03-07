@@ -1,92 +1,75 @@
-# @quarkid/did-registry
+# DID Registry
+This package exposes the functionality to create and publish DIDs using Modena Registry.
 
-## Descripción
+To create a new DID, you need to provide some public keys. You can use Extrimian KMS to generate the private keys. 
 
-`@quarkid/did-registry` expone funcionalidad para **crear y publicar DIDs** (Decentralized Identifiers) utilizando el protocolo Sidetree/ION a través de nodos Modena. Permite generar nuevos DIDs con claves criptográficas, servicios y métodos de verificación configurables.
+The next example shows how to create a new DID using Extrimian Registry and Extrimian KMS.
 
-Este paquete maneja la construcción de long-form DIDs y su anclaje en la blockchain mediante operaciones Sidetree. Se integra con `@quarkid/kms-client` para la gestión de claves criptográficas.
+```
+import { KMSClient } from "@quarkid/kms-client";
+import { Did } from "@quarkid/did-registry";
+import { AssertionMethodPurpuse, KeyAgreementPurpose } from "@quarkid/did-core";
+import { LANG, Suite } from "@quarkid/kms-core";
 
-## Tecnologías y Dependencias Clave
+const kms = new KMSClient({
+    lang: LANG.en,
+    storage: new SecureStorage(),
+});
 
-- **TypeScript** (^4.5.4)
-- **@quarkid/did-core** (1.1.2) - Modelos de DID
-- **@quarkid/kms-client** (1.4.0-4) - Gestión de claves
-- **@quarkid/kms-core** (1.4.0-4) - Core KMS
-- **@quarkid/core** (1.0.7) - Infraestructura base
-- **@quarkid/modena-sdk** (^1.3.4) - SDK de Modena
-- **@decentralized-identity/ion-sdk** (0.5.0) - SDK ION de DIF
-- **bs58** (^5.0.0) - Codificación Base58
-- **multibase** (^4.0.6) - Codificación multibase
+const updateKey = await kms.create(Suite.ES256k);
+const recoveryKey = await kms.create(Suite.ES256k);
 
-### DevDependencies
-- **Inversify** (^6.0.1) - Inyección de dependencias
-- **Jest** (^28.0.3) - Testing
+const didComm = await kms.create(Suite.DIDComm);
+const bbsbls = await kms.create(Suite.Bbsbls2020);
 
-## Instalación
+const didService = new Did();
 
-### npm
-```bash
-npm install @quarkid/did-registry
+const longDID = await didService.createDID({
+    updateKey: updateKey.publicKeyJWK,
+    recoveryKey: recoveryKey.publicKeyJWK,
+    verificationMethods: [{
+        id: "bbsbls",
+        type: "Bls12381G1Key2020",
+        publicKeyJwk: bbsbls.publicKeyJWK,
+        purpose: [new AssertionMethodPurpuse()]
+    },
+    {
+        id: "didComm",
+        type: "X25519KeyAgreementKey2019",
+        publicKeyJwk: didComm.publicKeyJWK,
+        purpose: [new KeyAgreementPurpose()]
+    }],
+})
 ```
 
-### yarn
-```bash
-yarn add @quarkid/did-registry
+KMS applies dependency inversion concepts so it requires send a SecureStorage by its constructor.
+
+To learn more about the Extrimian KMS read the documentation:
+@quarkid/kms-client
+
+createDID request returns a CreateDIDResponse
+
+```
+export interface CreateDIDResponse {
+    recoveryKey: IJWK;
+    updateKey: IJWK;
+    document: IonDocumentModel;
+    longDid: string;
+    didUniqueSuffix: string;
+}
 ```
 
-### pnpm
-```bash
-pnpm add @quarkid/did-registry
+Then you could publish your LongDID using the CreateDIDResponse:
+
 ```
-
-## API / Exports Principales
-
-| Export | Descripción |
-|--------|-------------|
-| `Did` (servicio) | Servicio principal para crear y publicar DIDs |
-| `ModenaUniversalRegistryService` | Registry universal que soporta múltiples métodos DID |
-| `CreateDIDResponse` | Modelo de respuesta al crear un DID (incluye long-form, update/recovery keys) |
-
-**Métodos principales del servicio `Did`:**
-- `createDID()` - Crea un nuevo DID con claves y servicios
-- `publishDID()` - Publica el DID en un nodo Modena
-- `updateDID()` - Actualiza un DID existente
-- `deactivateDID()` - Desactiva un DID
-
-## Configuración / Variables de Entorno
-
-**Configuración requerida**: URL del nodo Modena
-
-```typescript
 const registry = new Did();
-await registry.publishDID({
-  modenaApiURL: "https://modena.example.com:8080",
-  createDIDResponse: didResponse
+
+return await registry.publishDID({
+    modenaApiURL: getModenaApiURL(),
+    createDIDResponse: createDID,
 });
 ```
 
-⚠️ **Nota**: Requiere `@quarkid/kms-client` configurado para generar las claves criptográficas.
+Publish a did requires a Modena API URL, which represents a modena node running as a service.
 
-## Compatibilidad
-
-- **Node.js**: >= 17.x (inferido de `@types/node": "^17.0.27"`)
-- **TypeScript**: >= 4.5.4
-- **Entornos**: Backend (Node.js)
-
-## Versionado y Publicación
-
-- **Versión actual**: `1.5.2`
-- **Build previo**: Ejecutar `npm run build` antes de publicar
-- **Estructura de salida**: `dist/index.js` (CommonJS)
-
-## Licencia
-
-**Apache-2.0**
-
-Ver archivo [LICENSE](../../../LICENSE) en la raíz del monorepo.
-
----
-
-**Mantenido por**: QuarkID Team  
-**Repositorio**: https://github.com/ssi-quarkid/Paquetes-NPMjs/tree/main
-
+You can provide your own Modena node or use a public node.

@@ -1,80 +1,94 @@
-# @quarkid/did-core
+# DID Core
+This package define general interfaces to work with DID such as DIDDocument, DID Methods, Purposes, Services and Verification Methods.
 
-## Descripción
+This packages is used by DID Registry and DID Resolver.
 
-`@quarkid/did-core` define las **interfaces y modelos base** para trabajar con DIDs (Decentralized Identifiers) según el estándar W3C. Este paquete expone tipos TypeScript para DID Documents, Verification Methods, Services, Purposes y mensajes DIDComm.
+It does not add functionality or services but exposes the interfaces that will be used by the rest of the packages
 
-**No agrega funcionalidad o lógica de negocio**, sino que provee las abstracciones que son consumidas por `@quarkid/did-registry`, `@quarkid/did-resolver` y otros paquetes del ecosistema.
 
-## Tecnologías y Dependencias Clave
-
-- **TypeScript** (^4.5.4)
-- **reflect-metadata** (^0.1.13) - Soporte para decoradores
-
-### DevDependencies
-- **Jest** (^28.0.3) - Testing framework
-- **ts-node** (^10.4.0) - Ejecutar TypeScript directamente
-
-## Instalación
-
-### npm
-```bash
-npm install @quarkid/did-core
+## DID Document
+```
+export interface DIDDocument {
+  "@context": string | string[] | undefined | null;
+  id: string;
+  verificationMethod: Array<VerificationMethodPublicKey58 | VerificationMethodGpg | VerificationMethodJwk>;
+  authentication: Array<string | VerificationMethodPublicKey58 | VerificationMethodGpg | VerificationMethodJwk>;
+  assertionMethod: Array<string | VerificationMethodPublicKey58 | VerificationMethodGpg | VerificationMethodJwk>;
+  keyAgreement: Array<string | VerificationMethodPublicKey58 | VerificationMethodGpg | VerificationMethodJwk>;
+  capabilityDelegation: Array<string | VerificationMethodPublicKey58 | VerificationMethodGpg | VerificationMethodJwk>;
+  capabilityInvocation: Array<string | VerificationMethodPublicKey58 | VerificationMethodGpg | VerificationMethodJwk>;
+  service?: Array<Service>
+}
 ```
 
-### yarn
-```bash
-yarn add @quarkid/did-core
+## Purpose
+```
+export abstract class Purpose {
+    abstract name: string;
+}
+
+export class AuthenticationPurpose extends Purpose {
+    name = "authentication";
+    challenge?: string;
+
+    public constructor(init?: Partial<AuthenticationPurpose>) {
+        super();
+        Object.assign(this, init);
+    }
+}
+
+export class AssertionMethodPurpuse {
+    name = "assertionMethod";
+}
+
+export class CapabilityInvocationPurpose {
+    name = "capabilityInvocation";
+}
+
+export class KeyAgreementPurpose {
+    name = "keyAgreement";
+}
 ```
 
-### pnpm
-```bash
-pnpm add @quarkid/did-core
+## Service
+```
+  id: string,
+  type: string,
+  serviceEndpoint: string | string[] | Record<string, string | string[]>
 ```
 
-## API / Exports Principales
+## Verification Methods
+```
+export interface VerificationMethod {
+    id: string;
+    type: string;
+    controller: string;
+}
 
-| Export | Descripción |
-|--------|-------------|
-| `DIDDocument` | Interfaz del documento DID según W3C |
-| `DIDMethod` | Tipos y enums de métodos DID (did:quarkid, did:ion, etc.) |
-| `VerificationMethod` | Métodos de verificación (claves públicas) |
-| `VerificationMethodPublicKey58` | VM con clave en Base58 |
-| `VerificationMethodJwk` | VM con clave en formato JWK |
-| `VerificationMethodGpg` | VM con clave GPG |
-| `VerificationRelationship` | Relaciones de verificación en DID Doc |
-| `Service` | Servicios asociados al DID (DWN, messaging, etc.) |
-| `Purpose` | Propósitos de claves (authentication, assertionMethod, etc.) |
-| `AuthenticationPurpose` / `AssertionMethodPurpose` / `KeyAgreementPurpose` | Clases de propósitos específicos |
-| `DIDCommMessage` | Modelo de mensajes DIDComm |
-| `IStorage` | Interfaz genérica de almacenamiento |
-| `IDIDCommMessageStorage` / `IDIDCommThreadStorage` | Interfaces de storage para DIDComm |
-| `DIDCommMessageIStorage` / `DIDCommThreadIStorage` | Implementaciones de storage |
+export interface VerificationMethodPublicKeyHex extends VerificationMethod {
+    type: VerificationMethodTypes.Ed25519VerificationKey2018 | VerificationMethodTypes.Bls12381G1Key2020 | VerificationMethodTypes.EcdsaSecp256k1VerificationKey2019;
+    publicKeyHex: string;
+}
 
-## Configuración / Variables de Entorno
+export interface VerificationMethodPublicKey58 extends VerificationMethod {
+    type: VerificationMethodTypes.Ed25519VerificationKey2018 | VerificationMethodTypes.Bls12381G1Key2020 | VerificationMethodTypes.EcdsaSecp256k1VerificationKey2019;
+    publicKeyBase58: string;
+}
 
-⚠️ **No requiere configuración externa.** Es un paquete de tipos e interfaces puras.
+export interface VerificationMethodGpg extends VerificationMethod {
+    type: VerificationMethodTypes.GpgVerificationKey2020;
+    publicKeyGpg: string;
+}
 
-## Compatibilidad
+export interface VerificationMethodJwk extends VerificationMethod {
+    type: VerificationMethodTypes.JsonWebKey2020 | VerificationMethodTypes.EcdsaSecp256k1VerificationKey2019;
 
-- **Node.js**: >= 17.x (inferido de `@types/node": "^17.0.27"`)
-- **TypeScript**: >= 4.5.4
-- **Entornos**: Backend (Node.js), Frontend (compatible con bundlers)
-
-## Versionado y Publicación
-
-- **Versión actual**: `1.1.2`
-- **Build previo**: Ejecutar `npm run build` antes de publicar
-- **Estructura de salida**: `dist/index.js` (CommonJS)
-
-## Licencia
-
-**Apache-2.0**
-
-Ver archivo [LICENSE](../../../LICENSE) en la raíz del monorepo.
-
----
-
-**Mantenido por**: QuarkID Team  
-**Repositorio**: https://github.com/ssi-quarkid/Paquetes-NPMjs/tree/main
-
+    publicKeyJwk: {
+        crv: string;
+        x: string;
+        y: string;
+        kty: string;
+        kid?: string;
+    };
+}
+```

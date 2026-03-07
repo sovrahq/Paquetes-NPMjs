@@ -1,106 +1,142 @@
-# @quarkid/kms-client
+# Extrimian - KMS Client
+KMS comes from the English key management system and is the component in charge of creating key pairs, encrypting, decrypting and signing content.
+The current Extrimian KMS implementation supports the ES256k, DIDComm, and BBSBLS2020 algorithms.
 
-## Descripción
-
-`@quarkid/kms-client` es la **implementación concreta del Key Management System** de QuarkID. Provee funcionalidad para generar, almacenar y usar claves criptográficas de múltiples suites (ES256k, DIDComm, BBS+, RSA), firma de Verifiable Credentials, empaquetado/desempaquetado DIDComm y operaciones de derivación de claves.
-
-Implementa la interfaz `IKMS` de `@quarkid/kms-core` y orquesta las diferentes suites criptográficas (`@quarkid/kms-suite-*`) según las operaciones solicitadas.
-
-## Tecnologías y Dependencias Clave
-
-- **TypeScript** (^4.5.4)
-- **@quarkid/kms-core** (^1.4.0-4) - Interfaces base del KMS
-- **@quarkid/kms-suite-bbsbls2020** (1.2.0-2) - Suite BBS+ (ZKP)
-- **@quarkid/kms-suite-didcomm** (^1.1.2) - Suite DIDComm v1
-- **@quarkid/kms-suite-didcomm-v2** (^1.3.2) - Suite DIDComm v2
-- **@quarkid/kms-suite-es256k** (^1.2.4) - Suite ECDSA secp256k1
-- **@quarkid/kms-suite-rsa-signature-2018** (^1.1.3) - Suite RSA
-- **@quarkid/vc-core** (1.1.0-2) - Modelos de VCs
-
-### PeerDependencies
-- **@quarkid/did-core** (1.1.2) - Debe instalarse explícitamente
-
-### DevDependencies
-- **Jest** (^28.0.3) / **ts-jest** (^28.0.1) - Testing
-
-## Instalación
-
-### npm
-```bash
-npm install @quarkid/kms-client @quarkid/did-core
+##  KMS Constructor
+```
+constructor(
+  config: {
+        lang: LANG;
+        storage: KMSStorage;
+        didResolver ?: (did: string) => Promise<DIDDocument>;
+        mobile ?: boolean
+    }
+)
 ```
 
-### yarn
-```bash
-yarn add @quarkid/kms-client @quarkid/did-core
+* lang: The preferred language for the creation of ES256k keys mnemonic.
+* storage: The reference to an object that satisfies the KMSStorage interface is needed, which will store the generated key pairs, and which is accessed to make use of the keys either for signature operations or to export them, using the public component as an index.
+* didResolver: Optionally, a callback can be defined that provides the functionality to resolve a DID. If this parameter is not defined, the functionality of signing verifiable credentials will not be available.
+* mobile: Optionally, a flag can be set to indicate whether the KMSClient instance will work on a mobile platform or not. By default this option is false. In case this option is true, the Bbsbls2020 suite will not be available.
+
+## KMS Storage
+KMS applies dependency inversion concepts so it requires send a KMSStorage by its constructor.
+
+```
+interface KMSStorage {
+  add(key: string, data: any): Promise<void>;
+  get(key: string): Promise<any>;
+  getAll(): Promise<Map<string, any>>;
+  update(key: string, data: any);
+  remove(key: string);
+}
 ```
 
-### pnpm
-```bash
-pnpm add @quarkid/kms-client @quarkid/did-core
+### Example of KMS Storage Implementation
+This is a mock implementation example
+
+```
+import { KMSStorage } from "@quarkid/kms-core";
+
+export class SecureStorage implements KMSStorage {
+    map = new Map<string, any>();
+
+    async add(key: string, data: any): Promise<void> {
+        this.map.set(key, data);
+    }
+
+    async get(key: string): Promise<any> {
+        return this.map.get(key);
+    }
+
+    async getAll(): Promise<Map<string, any>> {
+        return this.map;
+    }
+
+    async update(key: string, data: any) {
+        this.map.set(key, data);
+    }
+
+    async remove(key: string) {
+        this.map.delete(key);
+    }
+}
 ```
 
-⚠️ **Nota**: Requiere `@quarkid/did-core` como peerDependency.
-
-## API / Exports Principales
-
-| Export | Descripción |
-|--------|-------------|
-| `KMSClient` | Clase principal del cliente KMS |
-| `BaseConverter` / `Base` | Re-export de utilidades de @quarkid/kms-core |
-
-**Métodos principales de `KMSClient`:**
-- `create(suite)` - Genera un nuevo par de claves
-- `sign(suite, publicKeyJWK, content)` - Firma contenido
-- `verifySignature(publicKeyJWK, content, signature)` - Verifica firma
-- `signVC(suite, publicKeyJWK, vc, did, vmId, purpose)` - Firma una VC
-- `signVCPresentation(params)` - Firma una presentación de VC
-- `deriveVC(params)` - Deriva una VC selectiva (BBS+)
-- `pack(publicKeyJWK, recipients, content)` - Empaqueta mensaje DIDComm
-- `unpack(publicKeyJWK, packedContent)` - Desempaqueta mensaje DIDComm
-- `export(publicKeyJWK)` - Exporta clave privada
-- `import(key)` - Importa clave privada
-- `getPublicKeysBySuiteType(suite)` - Obtiene claves por tipo de suite
-- `getAllPublicKeys()` - Obtiene todas las claves públicas
-
-## Configuración / Variables de Entorno
-
-**Configuración requerida al instanciar:**
-
-```typescript
-import { KMSClient } from "@quarkid/kms-client";
-import { LANG } from "@quarkid/kms-core";
-
-const kms = new KMSClient({
-  lang: LANG.es,                    // Idioma para mnemonics
-  storage: secureStorageInstance,   // Implementación de KMSStorage
-  didResolver: (did) => resolver.resolve(did), // Función resolver
-  mobile: false                     // true para entorno móvil
-});
+## Example to create Keys
+```
+const updateKey = await kms.create(Suite.ES256k);
+const recoveryKey = await kms.create(Suite.ES256k);
+const didComm = await kms.create(Suite.DIDComm);
+const bbsbls = await kms.create(Suite.Bbsbls2020);
 ```
 
-⚠️ **Nota**: Requiere implementar la interfaz `KMSStorage` para almacenamiento seguro de claves.
+##  Sign Content
+```
+sign(
+  suite: Suite,
+    publicKeyJWK: IJWK,
+    content: any
+): Promise<string>
+```
 
-## Compatibilidad
+### Example signing using ES256k Suite
+```
+return await kms.sign(Suite.ES256k, updateKey, content)
+```
 
-- **Node.js**: >= 14.x (inferido de `@types/node": "^14.17.6"`)
-- **TypeScript**: >= 4.5.4
-- **Entornos**: Backend (Node.js), Mobile (React Native con polyfills)
+## Sign VC
+It is used to sign a verifiable credential.
 
-## Versionado y Publicación
+* suite: Suite to use for the signature.
+* publicKeyJWK: Public component of the key pair to use as signer, in JWK format.
+* vc: Credential to sign.
+* did: DID of the issuer of the credential.
+* verificationMethodId: Identifier of the Verification Method to use to verify.
+* purpose: Indicates the Verification Relationship corresponding to the Verification Method to be used.
 
-- **Versión actual**: `1.4.0-4`
-- **Build previo**: Ejecutar `npm run build` antes de publicar
-- **Estructura de salida**: `dist/src/index.js` (CommonJS)
+```
+signVC(
+    suite: Suite,
+    publicKeyJWK: IJWK,
+    vc: any,
+    did: string,
+    verificationMethodId: string,
+    purpose: Purpose
+): Promise<VerifiableCredential>
+```
 
-## Licencia
+## DIDComm Pack and Unpack
+```
+pack(
+    publicKeyJWK: IJWK,
+    toHexPublicKeys: string[],
+    contentToSign: string
+): Promise<string>
+```
 
-**Apache-2.0**
+```
+unpack(
+  publicKeyJWK: IJWK,
+    packedContent: string
+): Promise<string>
+```
 
-Ver archivo [LICENSE](../../../LICENSE) en la raíz del monorepo.
+## Export private keys
+```
+export(
+  publicKeyJWK: IJWK
+): Promise<any>
+```
 
----
+## Get public keys by specific suite
+```
+getPublicKeysBySuiteType(
+  suite: Suite
+): Promise<IJWK[]>
+```
 
-**Mantenido por**: QuarkID Team  
-**Repositorio**: https://github.com/ssi-quarkid/Paquetes-NPMjs/tree/main
-
+## Get All public keys
+```
+getAllPublicKeys(): Promise<IJWK[]>
+```
