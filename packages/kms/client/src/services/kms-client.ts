@@ -38,6 +38,33 @@ import { DIDCommSuite } from "@sovrahq/kms-suite-didcomm-v2";
 import { BbsBls2020Suite } from "@sovrahq/kms-suite-bbsbls2020";
 import { RSASignature2018Suite } from "@sovrahq/kms-suite-rsa-signature-2018";
 import { ES256kSuite } from "@sovrahq/kms-suite-es256k";
+import { JsonLDSuite } from "@sovrahq/kms-suite-jsonld";
+
+// Inline Ed25519 VP signing suite — keys are stored as base58 strings
+// { publicKey, privateKey, keyType, suite }
+const jsigs = require('jsonld-signatures');
+class Ed25519VPSuite extends JsonLDSuite {
+  async create(): Promise<any> {
+    throw new Error('Ed25519 key creation not supported via this suite — use agent key generation');
+  }
+  protected async getSuite(params?: {
+    verificationMethodId: string;
+    controllerDid: string;
+  }): Promise<any> {
+    if (this.secret && params) {
+      const { Ed25519Signature2018 } = jsigs.suites;
+      const { Ed25519KeyPair } = require('crypto-ld');
+      const key = new Ed25519KeyPair({
+        id: params.verificationMethodId,
+        controller: params.controllerDid,
+        publicKeyBase58: (this.secret as any).publicKey,
+        privateKeyBase58: (this.secret as any).privateKey,
+      });
+      return new Ed25519Signature2018({ key });
+    }
+    return new jsigs.suites.Ed25519Signature2018();
+  }
+}
 
 export class KMSClient implements IKMS {
   suites: Map<Suite, new (...args: never[]) => any> = new Map();
@@ -54,6 +81,7 @@ export class KMSClient implements IKMS {
     this.suites.set(Suite.DIDCommV2, DIDCommSuite)
     this.suites.set(Suite.ES256k, ES256kSuite)
     this.suites.set(Suite.RsaSignature2018, RSASignature2018Suite)
+    this.suites.set(Suite.Ed25519Suite, Ed25519VPSuite as any)
 
     if (!config.mobile) {
       import("@sovrahq/kms-suite-bbsbls2020");
@@ -213,7 +241,7 @@ export class KMSClient implements IKMS {
       suiteName = Suite.Ed25519Suite;
     }
 
-    const suiteType = this.suites.get(suiteName) || this.suites.get(Suite.RsaSignature2018);
+    const suiteType = this.suites.get(suiteName);
 
     if (!suiteType) {
       throw new Error("Unsupported Suite");
