@@ -64,18 +64,6 @@ export class Messaging {
             // return `${this.getFullVerificationMethodId(targetKeyAgreements[0].id, did)}`;
         }));
 
-        if (params.messageManagerCompatible) {
-
-            const toPublickKeyHex = BaseConverter.convert(receiptVerificationMethods[0][0].publicKeyJwk, Base.JWK, Base.Hex, receiptVerificationMethods[0][0].type);
-
-            const message = await this.kms.packv2(myKeyAgreements[0].publicKeyJwk as IJWK,
-                this.getFullVerificationMethodId(myKeyAgreements[0].id, this.identity.getOperationalDID()),
-                [toPublickKeyHex],
-                params.message, "authcrypt");
-
-            return { packedMessage: JSON.parse(message.message) };
-        }
-
         const result = await this.kms.packDIDCommV2({
             senderVerificationMethodId: this.getFullVerificationMethodId(keyToSign.id, DID.from(myDID)),
             recipientVerificationMethodIds: receiptVerificationMethods.map(vm => `${this.getFullVerificationMethodId(vm[0].id, DID.from(vm[0].controller))}`),
