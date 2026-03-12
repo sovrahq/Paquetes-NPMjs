@@ -1,6 +1,6 @@
 {
   "name": "@sovrahq/kms-client",
-  "version": "1.4.0-5",
+  "version": "1.4.0-6",
   "description": "",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",

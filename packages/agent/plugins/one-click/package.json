@@ -21,7 +21,7 @@
     "typescript": "^4.5.4"
   },
   "peerDependencies": {
-    "@sovrahq/agent": "0.10.0-7"
+    "@sovrahq/agent": "0.10.0-8"
   },
   "dependencies": {
     "@sovrahq/did-core": "1.1.2",
