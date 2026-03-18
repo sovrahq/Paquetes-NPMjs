@@ -104,7 +104,7 @@ export class BaseConverter {
     n?: string;
   }) {
     // OKP support (Ed25519, X25519) — only x, no y
-    if (value.kty === 'OKP' || value.crv === 'Ed25519' || value.crv === 'X25519') {
+    if ((value.kty === 'OKP' || value.crv === 'Ed25519' || value.crv === 'X25519') && !value.y) {
       const xStr = value.x || '';
       let padded = xStr.replace(/-/g, '+').replace(/_/g, '/');
       while (padded.length % 4) padded += '=';
