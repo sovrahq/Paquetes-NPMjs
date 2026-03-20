@@ -152,8 +152,19 @@ export class AgentModenaUniversalRegistry extends IAgentSidetreeRegistry {
     }
 
     async updateDIDDocument(request: UpdateDIDRequest) {
+        // Extract didMethod from the DID value (e.g. "did:quarkid:sovra:Ei..." → "did:quarkid:sovra")
+        const didValue = request.did.value || request.did.toString();
+        const parts = didValue.split(':');
+        const methodParts: string[] = [];
+        for (let i = 0; i < parts.length; i++) {
+            if (parts[i].startsWith('Ei') && i >= 2) break;
+            methodParts.push(parts[i]);
+        }
+        const didMethod = methodParts.join(':') || this._defaultDidMethod;
+
         return await this.didService.updateDID({
             didSuffix: request.did.getDIDSuffix(),
+            didMethod,
             newUpdateKeys: request.newUpdateKeys,
             updateApiUrl: this.modenaEndpointURL,
             updateKeysToRemove: request.updateKeysToRemove,
@@ -200,8 +211,19 @@ export class AgentModenaRegistry extends IAgentSidetreeRegistry {
     }
 
     async updateDIDDocument(request: UpdateDIDRequest) {
+        // Extract didMethod from the DID value (e.g. "did:quarkid:sovra:Ei..." → "did:quarkid:sovra")
+        const didValue = request.did.value || request.did.toString();
+        const parts = didValue.split(':');
+        const methodParts: string[] = [];
+        for (let i = 0; i < parts.length; i++) {
+            if (parts[i].startsWith('Ei') && i >= 2) break;
+            methodParts.push(parts[i]);
+        }
+        const didMethod = methodParts.join(':') || this._defaultDidMethod;
+
         return await this.didService.updateDID({
             didSuffix: request.did.getDIDSuffix(),
+            didMethod,
             newUpdateKeys: request.newUpdateKeys,
             updateApiUrl: this.modenaEndpointURL,
             updateKeysToRemove: request.updateKeysToRemove,

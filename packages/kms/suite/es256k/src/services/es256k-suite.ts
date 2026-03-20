@@ -78,14 +78,17 @@ export class ES256kSuite implements IES256kSuite {
     };
   }
 
-  async sign(content: string): Promise<string> {
+  async sign(content: string | object): Promise<string> {
     if (!this.wallet)
       throw new Error(
         "Cannot sign content because wallet was not initialized with secrets."
       );
 
+    // Serialize objects to JSON string before signing (Sidetree updateDID passes {updateKey, deltaHash})
+    const toSign = (typeof content === 'object' && content !== null) ? JSON.stringify(content) : content as string;
+
     // Raw ECDSA signing for Sidetree JWS (no Ethereum message prefix)
-    const hash = ethers.utils.sha256(ethers.utils.toUtf8Bytes(content));
+    const hash = ethers.utils.sha256(ethers.utils.toUtf8Bytes(toSign));
     const sig = this.wallet._signingKey().signDigest(hash);
     const rBytes = Buffer.from(ethers.utils.arrayify(sig.r));
     const sBytes = Buffer.from(ethers.utils.arrayify(sig.s));
