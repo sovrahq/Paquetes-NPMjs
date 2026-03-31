@@ -116,6 +116,19 @@ export class PresentProofHandler implements WACIMessageHandler {
       console.log(`[STEP-5] submission[${i}] found:`, !!s.submission, 'defId:', s.presentationDefinition?.id);
     });
 
+    // Fallback: if definition_id mismatch, match by position (SD-JWT wallets may generate new UUIDs)
+    submissionsToCheck.forEach((s, i) => {
+      if (isNil(s.submission)) {
+        const fallback = messageToProcess.attachments.find(
+          (att) => att.data && att.data.json && att.data.json.presentation_submission,
+        );
+        if (fallback) {
+          console.log(`[STEP-5] definition_id mismatch, using positional fallback for submission[${i}]`);
+          s.submission = fallback;
+        }
+      }
+    });
+
     let result = false;
 
     const verificationResultCallback = callbacks[Actor.Verifier].credentialVerificationResult;
