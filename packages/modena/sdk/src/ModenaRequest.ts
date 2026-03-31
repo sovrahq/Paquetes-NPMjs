@@ -1,4 +1,5 @@
 import * as URI from 'uri-js';
+import Encoder from './Encoder';
 import ErrorCode from './ErrorCode';
 import ISigner from './interfaces/ISigner';
 import InputValidator from './InputValidator';
@@ -103,7 +104,12 @@ export default class ModenaRequest {
       recoveryKey: input.recoveryPublicKey
     };
 
-    const compactJws = await input.signer.sign({ alg: 'ES256K' }, dataToBeSigned);
+    // Construct JWS manually so signer receives the signing input string, not the raw object
+    const encodedHeader = Encoder.encode(Buffer.from(JSON.stringify({ alg: 'ES256K' })));
+    const encodedPayload = Encoder.encode(Buffer.from(JSON.stringify(dataToBeSigned)));
+    const signingInput = `${encodedHeader}.${encodedPayload}`;
+    const signatureBase64url = await input.signer.sign({ alg: 'ES256K' }, signingInput);
+    const compactJws = `${signingInput}.${signatureBase64url}`;
 
     return {
       type: OperationType.Deactivate,
@@ -163,7 +169,12 @@ export default class ModenaRequest {
       deltaHash: deltaHash
     };
 
-    const compactJws = await input.signer.sign({ alg: 'ES256K' }, dataToBeSigned);
+    // Construct JWS manually so signer receives the signing input string, not the raw object
+    const encodedHeader = Encoder.encode(Buffer.from(JSON.stringify({ alg: 'ES256K' })));
+    const encodedPayload = Encoder.encode(Buffer.from(JSON.stringify(dataToBeSigned)));
+    const signingInput = `${encodedHeader}.${encodedPayload}`;
+    const signatureBase64url = await input.signer.sign({ alg: 'ES256K' }, signingInput);
+    const compactJws = `${signingInput}.${signatureBase64url}`;
 
     return {
       type: OperationType.Recover,
@@ -298,7 +309,12 @@ export default class ModenaRequest {
       deltaHash: deltaHash
     };
 
-    const compactJws = await input.signer.sign({ alg: 'ES256K' }, dataToBeSigned);
+    // Construct JWS manually so signer receives the signing input string, not the raw object
+    const encodedHeader = Encoder.encode(Buffer.from(JSON.stringify({ alg: 'ES256K' })));
+    const encodedPayload = Encoder.encode(Buffer.from(JSON.stringify(dataToBeSigned)));
+    const signingInput = `${encodedHeader}.${encodedPayload}`;
+    const signatureBase64url = await input.signer.sign({ alg: 'ES256K' }, signingInput);
+    const compactJws = `${signingInput}.${signatureBase64url}`;
 
     return {
       type: OperationType.Update,
