@@ -297,13 +297,17 @@ export class AgentIdentity {
         }))
         .concat(
           bbsbls2020Keys
-            .map((x) => ({
-              id: x.id,
-              publicKeyJwk: x.pbk.publicKeyJWK,
-              purpose: [new AssertionMethodPurpose()],
-              type: 'Bls12381G1Key2020',
-              controller: this.getOperationalDID(),
-            }))
+            .map((x) => {
+              const jwk = x.pbk.publicKeyJWK;
+              const isEd25519 = jwk && jwk.kty === 'OKP' && jwk.crv === 'Ed25519';
+              return {
+                id: x.id,
+                publicKeyJwk: jwk,
+                purpose: [new AssertionMethodPurpose()],
+                type: isEd25519 ? 'Ed25519VerificationKey2018' : 'Bls12381G1Key2020',
+                controller: this.getOperationalDID(),
+              };
+            })
             .concat(
               rsaKeys.map((x) => ({
                 id: x.id,
@@ -314,13 +318,17 @@ export class AgentIdentity {
               }))
             )
             .concat(
-              ecdskeys.map((x) => ({
-                id: x.id,
-                publicKeyJwk: x.pbk.publicKeyJWK,
-                purpose: [new AuthenticationPurpose()],
-                type: 'EcdsaSecp256k1VerificationKey2019',
-                controller: this.getOperationalDID(),
-              }))
+              ecdskeys.map((x) => {
+                const jwk = x.pbk.publicKeyJWK;
+                const isEd25519 = jwk && jwk.kty === 'OKP' && jwk.crv === 'Ed25519';
+                return {
+                  id: x.id,
+                  publicKeyJwk: jwk,
+                  purpose: [new AuthenticationPurpose()],
+                  type: isEd25519 ? 'Ed25519VerificationKey2018' : 'EcdsaSecp256k1VerificationKey2019',
+                  controller: this.getOperationalDID(),
+                };
+              })
             )
             .concat(
               ed25519Keys.map((x) => ({

@@ -62,19 +62,38 @@ export class AgentTransport {
         transport: ITransport
     ) {
         console.info("Message arrived using", transport.constructor?.name)
-        const unpackedMessage = await this.agent.messaging.unpackMessage({
-            message: params.data,
-        });
+        try {
+            const unpackedMessage = await this.agent.messaging.unpackMessage({
+                message: params.data,
+            });
 
-        if (unpackedMessage?.id) {
-            this.cacheStorage.set(unpackedMessage.id, transport.constructor.name);
+            if (unpackedMessage?.id) {
+                this.cacheStorage.set(unpackedMessage.id, transport.constructor.name);
+            }
+
+            this.onMessageArrived.trigger({
+                message: unpackedMessage,
+                transport: transport,
+                contextMessage: params.context
+            });
+        } catch (err) {
+            // DIDComm v1 messages arrive as plaintext JSON
+            try {
+                const plaintext = typeof params.data === 'string' ? JSON.parse(params.data) : params.data;
+                if (plaintext && plaintext.type && /\/1\.0\//.test(plaintext.type)) {
+                    if (plaintext.id) {
+                        this.cacheStorage.set(plaintext.id, transport.constructor.name);
+                    }
+                    this.onMessageArrived.trigger({
+                        message: plaintext,
+                        transport: transport,
+                        contextMessage: params.context
+                    });
+                }
+            } catch (fallbackErr) {
+                // Both v2 and v1 parsing failed
+            }
         }
-
-        this.onMessageArrived.trigger({
-            message: unpackedMessage,
-            transport: transport,
-            contextMessage: params.context
-        });
     }
 
     addTransports(transport: ITransport) {

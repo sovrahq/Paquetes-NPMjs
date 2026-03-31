@@ -56,10 +56,16 @@ export class Messaging {
             return y.x == x.publicKeyJwk.x && y.y == x.publicKeyJwk.y;
         }));
 
+        if (!keyToSign) {
+            throw new Error(`No DIDCommV2 key found in KMS matching DID Document. myKeyAgreements: ${myKeyAgreements.length}, KMS DIDCommV2 keys: ${didCommV2Keys.length}. Try recreating the DID.`);
+        }
 
         const receiptVerificationMethods = await Promise.all(params.to.map(async did => {
             const targetDIDDocument = await this.resolver.resolve(did);
             const targetKeyAgreements = DIDDocumentUtils.getVerificationMethodsByType(targetDIDDocument, VerificationMethodTypes.X25519KeyAgreementKey2019) as VerificationMethodJwk[];
+            if (!targetKeyAgreements || targetKeyAgreements.length === 0) {
+                throw new Error(`No X25519KeyAgreementKey2019 found in target DID Document for ${did.value || did}`);
+            }
             return targetKeyAgreements;
             // return `${this.getFullVerificationMethodId(targetKeyAgreements[0].id, did)}`;
         }));

@@ -429,7 +429,7 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                     return true;
                 },
                 handlePresentationAck: async (p: { status: any, message: WACIMessage }) => {
-                    if (p.message.type !== "https://didcomm.org/report-problem/2.0/problem-report") {
+                    if (p.message.type !== "https://didcomm.org/report-problem/2.0/problem-report" && (p.message.type as string) !== "https://didcomm.org/report-problem/1.0/problem-report") {
                         const data = await this.storage.get(p.message.thid);
                         // const ot = await this.storage.get(data[0].thid);
                         // const ot2 = await this.storage.get(data[0].id);
@@ -444,7 +444,22 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                         });
                     }
                 },
-                signPresentation: async (p: { contentToSign: string, challenge: string, domain: string, message: WACIMessage }) => {
+                signPresentation: async (p: { contentToSign: any, challenge: string, domain: string, message: WACIMessage }) => {
+                    // SD-JWT: unwrap VC objects with format/raw and skip JSON-LD signing
+                    if (p.contentToSign && typeof p.contentToSign === 'object') {
+                        const vcs = p.contentToSign.verifiableCredential || [];
+                        p.contentToSign.verifiableCredential = vcs.map((vc: any) => {
+                            if (typeof vc === 'object' && vc !== null && vc.format === 'sd-jwt' && vc.raw) {
+                                return vc.raw;
+                            }
+                            return vc;
+                        });
+                        const hasSDJWT = p.contentToSign.verifiableCredential.some((vc: any) => typeof vc === 'string' && vc.includes('~'));
+                        if (hasSDJWT) {
+                            return p.contentToSign;
+                        }
+                    }
+
                     const signature = await this.agent.vc.signPresentation({
                         contentToSign: p.contentToSign,
                         challenge: p.challenge,
@@ -576,17 +591,33 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                 this.storage.update(response.message.thid, messages);
             }
 
-            return {
-                to: DID.from(response.target),
-                message: (await this.agent.messaging.packMessage({
-                    message: response.message as any,
+            // DIDComm v1 messages should be sent as plaintext JSON
+            if (response.message.type && /\/1\.0\//.test(response.message.type)) {
+                return {
                     to: DID.from(response.target),
-                    messageManagerCompatible: context?.messageManagerCompatible,
-                })).packedMessage
-            };
+                    message: JSON.stringify(response.message)
+                };
+            }
+
+            try {
+                return {
+                    to: DID.from(response.target),
+                    message: (await this.agent.messaging.packMessage({
+                        message: response.message as any,
+                        to: DID.from(response.target),
+                        messageManagerCompatible: context?.messageManagerCompatible,
+                    })).packedMessage
+                };
+            } catch (packErr) {
+                console.warn('[WACI] Failed to pack DIDCommV2 response, sending as plaintext:', packErr?.message);
+                return {
+                    to: DID.from(response.target),
+                    message: JSON.stringify(response.message)
+                };
+            }
         }
 
-        if (messages[messages.length - 1].type == WACIMessageType.ProblemReport) {
+        if (messages[messages.length - 1].type == WACIMessageType.ProblemReport || (messages[messages.length - 1].type as string) == 'https://didcomm.org/report-problem/1.0/problem-report') {
             const problemReportMessage = messages[messages.length - 1];
 
             const data = await this.storage.get(problemReportMessage.thid);
