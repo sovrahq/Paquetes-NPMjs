@@ -18,6 +18,7 @@ import { ActorRole, VCProtocol, VCProtocolResponse } from "./vc-protocol";
 export class WACIProtocol extends VCProtocol<WACIMessage> {
     private waciInterpreter: WACIInterpreter;
     private storage: IStorage;
+    private _processedMessageIds: Set<string> = new Set();
 
     issueCredentials: (waciInvitationId: string, holderDID: string) => Promise<WACICredentialOfferResponse>;
     issuerVerificationRules?: (waciInvitationId: string, holdedDID: string) => Promise<IssuerVerificationRuleResult>;
@@ -573,6 +574,16 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
         }
 
         const waciMessage = message as WACIMessage;
+
+        // Dedup: skip messages already processed (prevents duplicate signing/webhooks)
+        if (waciMessage.id && this._processedMessageIds.has(waciMessage.id)) {
+            console.log('[WACI-DEDUP] Skipping already processed message:', waciMessage.id, 'type:', waciMessage.type);
+            return;
+        }
+        if (waciMessage.id) {
+            this._processedMessageIds.add(waciMessage.id);
+            setTimeout(() => { this._processedMessageIds.delete(waciMessage.id); }, 120000);
+        }
 
         let messages = waciMessage.thid ? await this.storage.get<WACIMessage[]>(waciMessage.thid) || new Array<WACIMessage>() : new Array<WACIMessage>();
         messages.push(waciMessage);
