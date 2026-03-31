@@ -5,5 +5,5 @@ export default interface ISigner {
   /**
    * Signs the given content as a compact JWS string.
    */
-  sign (header: object, content: object): Promise<string>;
+  sign (header: object, content: object | string): Promise<string>;
 }

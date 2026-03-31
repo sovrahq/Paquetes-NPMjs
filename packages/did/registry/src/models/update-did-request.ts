@@ -9,6 +9,7 @@ export type UpdateDIDRequest = {
         value: string,
         type?: "header" | "queryParam"
     };
+    didMethod?: string;
     updateApiUrl: string;
     didSuffix: string;
     signer: (content: any) => Promise<string>;

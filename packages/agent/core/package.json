@@ -1,6 +1,6 @@
 {
   "name": "@sovrahq/agent",
-  "version": "0.10.0-8",
+  "version": "0.10.0-9",
   "description": "Agent SDK",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

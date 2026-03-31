@@ -182,10 +182,12 @@ export class AgentModenaUniversalRegistry extends IAgentSidetreeRegistry {
 }
 
 export class AgentModenaRegistry extends IAgentSidetreeRegistry {
+    _defaultDidMethod: string;
     didService = new Did();
 
     constructor(private modenaEndpointURL: string, private didMethod?: string) {
         super();
+        this._defaultDidMethod = didMethod;
     }
 
     async createDID(createRequest: CreateDIDRequest): Promise<CreateDIDSidetreeResponse> {
