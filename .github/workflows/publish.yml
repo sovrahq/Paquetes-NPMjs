@@ -1,0 +1,79 @@
+name: Publish @sovrahq packages to npm
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.1
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build all packages
+        run: yarn build
+
+      - name: Publish changed packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          PACKAGES=(
+            "packages/core"
+            "packages/did/core"
+            "packages/did/didcomm"
+            "packages/did/registry"
+            "packages/did/resolver"
+            "packages/vc/core"
+            "packages/vc/verifier"
+            "packages/kms/core"
+            "packages/kms/client"
+            "packages/kms/client-mobile"
+            "packages/kms/suite/didcomm"
+            "packages/kms/suite/didcomm-v2"
+            "packages/kms/suite/es256k"
+            "packages/kms/suite/vc/jsonld"
+            "packages/kms/suite/vc/bbsbls2020"
+            "packages/kms/suite/vc/rsa"
+            "packages/kms/storage/vault"
+            "packages/modena/sdk"
+            "packages/waci/core"
+            "packages/dwn/client"
+            "packages/dwn/scheduler"
+            "packages/dwn-ami/client"
+            "packages/dwn-ami/scheduler"
+            "packages/one-click"
+            "packages/agent/core"
+            "packages/agent/plugins/one-click"
+            "packages/agent/plugins/ami"
+            "packages/agent/plugins/status-list"
+            "packages/ami/ami-core"
+            "packages/ami/ami-sdk"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            if [ -d "$pkg" ]; then
+              cd "$pkg"
+              NAME=$(node -p "require('./package.json').name")
+              LOCAL_VERSION=$(node -p "require('./package.json').version")
+              PUBLISHED_VERSION=$(npm view "$NAME" version 2>/dev/null || echo "0.0.0")
+
+              if [ "$LOCAL_VERSION" != "$PUBLISHED_VERSION" ]; then
+                echo "📦 Publishing $NAME@$LOCAL_VERSION (was $PUBLISHED_VERSION)"
+                npm publish --access public --ignore-scripts || echo "⚠️ Failed to publish $NAME"
+              else
+                echo "⏭️ $NAME@$LOCAL_VERSION already published"
+              fi
+              cd - > /dev/null
+            fi
+          done
