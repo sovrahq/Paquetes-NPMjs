@@ -34,66 +34,171 @@ export class VCVerifierService {
 
     const vcObj = vc as VerifiableCredential;
 
-    if (
-      vcObj.credentialStatus &&
-      vcObj.credentialStatus.type ==
-        CredentialStatusType.CredentialStatusList2017
-    ) {
-      const errors = new Array<{ status: string; message: string }>();
+    if (vcObj.credentialStatus) {
+      const statusEntries = Array.isArray(vcObj.credentialStatus)
+        ? vcObj.credentialStatus
+        : [vcObj.credentialStatus];
 
-      try {
-        let response: AxiosResponse<any, any>;
-        try {
-          response = await axios.post(vcObj.credentialStatus.id, null);
-        } catch (ex: unknown) {
-          if (ex instanceof AxiosError) {
-            if (ex.isAxiosError) {
+      for (const statusEntry of statusEntries) {
+        // BitstringStatusListEntry (VC v2)
+        if (statusEntry.type === CredentialStatusType.BitstringStatusListEntry) {
+          try {
+            const statusListUrl = statusEntry.statusListCredential;
+            if (!statusListUrl) {
               return {
                 result: false,
                 error: new CredentialStatusServiceError(
-                  vcObj.credentialStatus.id,
-                  ex.response.status,
-                  ex.response.data
+                  "missing-statusListCredential", 0, "statusListCredential URL is missing"
                 ),
               };
             }
+
+            let response: AxiosResponse<any, any>;
+            try {
+              response = await axios.get(statusListUrl);
+            } catch (ex: unknown) {
+              if (ex instanceof AxiosError && ex.isAxiosError) {
+                return {
+                  result: false,
+                  error: new CredentialStatusServiceError(
+                    statusListUrl,
+                    ex.response?.status || 0,
+                    ex.response?.data || "Failed to fetch status list"
+                  ),
+                };
+              }
+              throw new VCUnexpectedError(ex);
+            }
+
+            const encodedList = response.data?.credentialSubject?.encodedList;
+            if (!encodedList) {
+              return {
+                result: false,
+                error: new CredentialStatusServiceError(
+                  statusListUrl, 0, "encodedList not found in status list credential"
+                ),
+              };
+            }
+
+            // Decode: base64 → gunzip → bitstring
+            const zlib = require("zlib");
+            const compressed = Buffer.from(encodedList, "base64");
+            let bitstring: Buffer;
+            try {
+              bitstring = zlib.gunzipSync(compressed);
+            } catch {
+              return {
+                result: false,
+                error: new CredentialStatusServiceError(
+                  statusListUrl, 0, "Failed to decompress encodedList"
+                ),
+              };
+            }
+
+            const statusIndex = parseInt(statusEntry.statusListIndex, 10);
+            const statusSize = statusEntry.statusSize || 1;
+
+            // Read bits at statusIndex
+            const bitStart = statusIndex * statusSize;
+            let statusValue = 0;
+            for (let i = 0; i < statusSize; i++) {
+              const currentBit = bitStart + i;
+              const byteIndex = Math.floor(currentBit / 8);
+              const bitOffset = 7 - (currentBit % 8);
+              const bit = (bitstring[byteIndex] >> bitOffset) & 1;
+              statusValue = (statusValue << 1) | bit;
+            }
+
+            // Check status against statusMessage if present
+            if (statusEntry.statusMessage && Array.isArray(statusEntry.statusMessage)) {
+              const match = statusEntry.statusMessage.find(
+                (m: any) => parseInt(m.status, 16) === statusValue
+              );
+              if (match) {
+                const msg = match.message.toLowerCase();
+                if (msg === "revoked") {
+                  return {
+                    result: false,
+                    error: new VerifiableCredentialRevoked([`${match.status} - ${match.message}`]),
+                  };
+                }
+                if (msg === "suspended") {
+                  return {
+                    result: false,
+                    error: new VerifiableCredentialSuspended([`${match.status} - ${match.message}`]),
+                  };
+                }
+              }
+            } else {
+              // Default 1-bit: 0 = active, 1 = revoked/set
+              if (statusValue !== 0) {
+                const purpose = statusEntry.statusPurpose || "revocation";
+                if (purpose === "suspension") {
+                  return {
+                    result: false,
+                    error: new VerifiableCredentialSuspended(["suspended"]),
+                  };
+                }
+                return {
+                  result: false,
+                  error: new VerifiableCredentialRevoked(["revoked"]),
+                };
+              }
+            }
+          } catch (ex) {
+            throw new VCUnexpectedError(ex);
           }
-          throw new VCUnexpectedError(ex);
         }
 
-        if (response.data?.verifiableCredential) {
-          for (let i = 0; i < response.data?.verifiableCredential.length; i++) {
-            if (
-              response.data?.verifiableCredential[
-                i
-              ].claim.currentStatus.toLowerCase() == "revoked" ||
-              response.data?.verifiableCredential[
-                i
-              ].claim.currentStatus.toLowerCase() == "suspend"
-            ) {
-              errors.push({
-                status:
-                  response.data?.verifiableCredential[i].claim.currentStatus,
-                message:
-                  response.data?.verifiableCredential[i].claim.statusReason,
-              });
+        // CredentialStatusList2017 (legacy VC v1)
+        if (statusEntry.type === CredentialStatusType.CredentialStatusList2017) {
+          const errors = new Array<{ status: string; message: string }>();
+
+          try {
+            let response: AxiosResponse<any, any>;
+            try {
+              response = await axios.post(statusEntry.id, null);
+            } catch (ex: unknown) {
+              if (ex instanceof AxiosError) {
+                if (ex.isAxiosError) {
+                  return {
+                    result: false,
+                    error: new CredentialStatusServiceError(
+                      statusEntry.id,
+                      ex.response.status,
+                      ex.response.data
+                    ),
+                  };
+                }
+              }
+              throw new VCUnexpectedError(ex);
             }
-          }
-          if (errors.length > 0) {
-            return {
-              result: false,
-              error: errors.some((x) => x.status.toLowerCase() == "revoked")
-                ? new VerifiableCredentialRevoked(
-                    errors.map((x) => `${x.status} - ${x.message}`)
-                  )
-                : new VerifiableCredentialSuspended(
-                    errors.map((x) => `${x.status} - ${x.message}`)
-                  ),
-            };
+
+            if (response.data?.verifiableCredential) {
+              for (let i = 0; i < response.data?.verifiableCredential.length; i++) {
+                if (
+                  response.data?.verifiableCredential[i].claim.currentStatus.toLowerCase() == "revoked" ||
+                  response.data?.verifiableCredential[i].claim.currentStatus.toLowerCase() == "suspend"
+                ) {
+                  errors.push({
+                    status: response.data?.verifiableCredential[i].claim.currentStatus,
+                    message: response.data?.verifiableCredential[i].claim.statusReason,
+                  });
+                }
+              }
+              if (errors.length > 0) {
+                return {
+                  result: false,
+                  error: errors.some((x) => x.status.toLowerCase() == "revoked")
+                    ? new VerifiableCredentialRevoked(errors.map((x) => `${x.status} - ${x.message}`))
+                    : new VerifiableCredentialSuspended(errors.map((x) => `${x.status} - ${x.message}`)),
+                };
+              }
+            }
+          } catch (ex) {
+            throw new VCUnexpectedError(ex);
           }
         }
-      } catch (ex) {
-        throw new VCUnexpectedError(ex);
       }
     }
     // check expiration date

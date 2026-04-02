@@ -2,7 +2,7 @@
   "author": "QuarkID",
   "license": "Apache-2.0",
   "name": "@sovrahq/did-registry",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
