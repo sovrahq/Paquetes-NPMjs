@@ -6,12 +6,16 @@ on:
 
 jobs:
   publish:
+    # Skip if this is an auto-bump commit from CI
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:
@@ -61,19 +65,79 @@ jobs:
             "packages/ami/ami-sdk"
           )
 
-          for pkg in "${PACKAGES[@]}"; do
-            if [ -d "$pkg" ]; then
-              cd "$pkg"
-              NAME=$(node -p "require('./package.json').name")
-              LOCAL_VERSION=$(node -p "require('./package.json').version")
-              PUBLISHED_VERSION=$(npm view "$NAME" version 2>/dev/null || echo "0.0.0")
+          BUMPED=false
 
-              if [ "$LOCAL_VERSION" != "$PUBLISHED_VERSION" ]; then
-                echo "📦 Publishing $NAME@$LOCAL_VERSION (was $PUBLISHED_VERSION)"
-                npm publish --access public --ignore-scripts || echo "⚠️ Failed to publish $NAME"
-              else
-                echo "⏭️ $NAME@$LOCAL_VERSION already published"
-              fi
+          for pkg in "${PACKAGES[@]}"; do
+            if [ ! -d "$pkg" ]; then continue; fi
+
+            cd "$pkg"
+            NAME=$(node -p "require('./package.json').name")
+            LOCAL_VERSION=$(node -p "require('./package.json').version")
+            PUBLISHED_VERSION=$(npm view "$NAME" version 2>/dev/null || echo "NOT_FOUND")
+
+            # First publish — just publish as-is
+            if [ "$PUBLISHED_VERSION" = "NOT_FOUND" ]; then
+              echo "🆕 First publish: $NAME@$LOCAL_VERSION"
+              npm publish --access public --ignore-scripts || echo "⚠️ Failed to publish $NAME"
               cd - > /dev/null
+              continue
             fi
+
+            # Version already bumped manually — publish directly
+            if [ "$LOCAL_VERSION" != "$PUBLISHED_VERSION" ]; then
+              echo "📦 Publishing $NAME@$LOCAL_VERSION (manually bumped from $PUBLISHED_VERSION)"
+              npm publish --access public --ignore-scripts || echo "⚠️ Failed to publish $NAME"
+              cd - > /dev/null
+              continue
+            fi
+
+            # Same version — compare compiled content against npm
+            TMPDIR=$(mktemp -d)
+            (cd "$TMPDIR" && npm pack "$NAME@$PUBLISHED_VERSION" --silent 2>/dev/null && tar -xzf *.tgz 2>/dev/null) || true
+
+            NEEDS_PUBLISH=false
+            if [ -d "dist" ] && [ -d "$TMPDIR/package/dist" ]; then
+              DIFF=$(diff -rq dist/ "$TMPDIR/package/dist/" 2>&1 || true)
+              if [ -n "$DIFF" ]; then
+                NEEDS_PUBLISH=true
+              fi
+            fi
+            rm -rf "$TMPDIR"
+
+            if [ "$NEEDS_PUBLISH" = "true" ]; then
+              # Auto-bump: prerelease increments prerelease number, stable increments patch
+              NEW_VERSION=$(node -e "
+                const fs = require('fs');
+                const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+                const v = pkg.version;
+                const [base, pre] = v.split('-');
+                if (pre !== undefined) {
+                  pkg.version = base + '-' + (parseInt(pre) + 1);
+                } else {
+                  const parts = base.split('.');
+                  parts[2] = parseInt(parts[2]) + 1;
+                  pkg.version = parts.join('.');
+                }
+                fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
+                console.log(pkg.version);
+              ")
+              echo "📦 Publishing $NAME@$NEW_VERSION (auto-bumped, content changed vs $PUBLISHED_VERSION)"
+              npm publish --access public --ignore-scripts || echo "⚠️ Failed to publish $NAME"
+              BUMPED=true
+            else
+              echo "⏭️ $NAME@$LOCAL_VERSION — no changes"
+            fi
+
+            cd - > /dev/null
           done
+
+          echo "BUMPED=$BUMPED" >> $GITHUB_ENV
+
+      - name: Commit version bumps
+        if: env.BUMPED == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add '*/package.json'
+          git commit -m "ci: auto-bump versions for published packages [skip ci]"
+          git push
