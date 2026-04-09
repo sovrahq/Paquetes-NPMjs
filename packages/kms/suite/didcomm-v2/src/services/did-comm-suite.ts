@@ -60,14 +60,14 @@ export class DIDCommSuite implements IDIDCommV2Suite {
     load(keyPair?: IDidCommKeyPair) {
         this.keyPair = keyPair;
         if (keyPair) {
-            if (keyPair.publicKey.indexOf("0x") == 0) {
+            if (keyPair.publicKey && keyPair.publicKey.indexOf("0x") == 0) {
                 this.keyPair = {
                     privateKey: this.keyPair.privateKey,
                     publicKey: this.keyPair.publicKey.substring(2),
                     keyType: this.keyPair.keyType
                 }
             }
-            if (keyPair.privateKey.indexOf("0x") == 0) {
+            if (keyPair.privateKey && keyPair.privateKey.indexOf("0x") == 0) {
                 this.keyPair = {
                     privateKey: this.keyPair.privateKey.substring(2),
                     publicKey: this.keyPair.publicKey,
@@ -287,6 +287,10 @@ export class DIDCommSuite implements IDIDCommV2Suite {
         let decrypter: Decrypter;
 
         const senderPbk = await this.extractSenderEncryptionKey(jwe);
+
+        if (!this.keyPair || !this.keyPair.privateKey) {
+            throw new Error('DIDCommSuite: Cannot unpack JWE - no private key loaded');
+        }
 
         if (senderPbk && jwe.recipients[0].header.alg.includes('ECDH-1PU')) {
             const privateKeyBytes = arrayify(this.keyPair.privateKey, { allowMissingPrefix: true });

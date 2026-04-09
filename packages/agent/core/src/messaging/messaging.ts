@@ -48,12 +48,19 @@ export class Messaging {
 
         const myKeyAgreements = DIDDocumentUtils.getVerificationMethodsByType(myDIDDocument, VerificationMethodTypes.X25519KeyAgreementKey2019) as VerificationMethodJwk[];
         const didCommV2Keys = await this.kms.getPublicKeysBySuiteType(Suite.DIDCommV2);
+        const _b64 = (s: string) => { let p = s.replace(/-/g,'+').replace(/_/g,'/'); while(p.length%4) p+='='; return Buffer.from(p,'base64'); };
         const keyToSign = myKeyAgreements.find(x => didCommV2Keys.some(y => {
-            // OKP keys (Ed25519/X25519) only have x, no y
-            if (x.publicKeyJwk.kty === 'OKP' || !x.publicKeyJwk.y) {
-                return y.x == x.publicKeyJwk.x;
+            // Same format: both have y (EC) or both lack y (OKP)
+            if (!!x.publicKeyJwk.y === !!y.y) {
+                if (!x.publicKeyJwk.y) return y.x == x.publicKeyJwk.x;
+                return y.x == x.publicKeyJwk.x && y.y == x.publicKeyJwk.y;
             }
-            return y.x == x.publicKeyJwk.x && y.y == x.publicKeyJwk.y;
+            // Cross-format: EC (x+y, 16+16 bytes) vs OKP (x, 32 bytes = concat of EC x+y)
+            try {
+                const ecJwk = x.publicKeyJwk.y ? x.publicKeyJwk : y;
+                const okpJwk = x.publicKeyJwk.y ? y : x.publicKeyJwk;
+                return Buffer.concat([_b64(ecJwk.x), _b64(ecJwk.y)]).equals(_b64(okpJwk.x));
+            } catch(e) { return false; }
         }));
 
         if (!keyToSign) {

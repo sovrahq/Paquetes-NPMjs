@@ -162,7 +162,8 @@ export class AgentIdentity {
       id: string,
       vmKey: VMKey,
       publicKeyJWK: IJWK,
-      secrets: IKeyPair,
+      secrets?: IKeyPair,
+      skipKmsImport?: boolean,
     }[];
     didMethod?: string;
   }): Promise<DID>;
@@ -177,7 +178,8 @@ export class AgentIdentity {
       id: string,
       vmKey: VMKey,
       publicKeyJWK: IJWK,
-      secrets: IKeyPair,
+      secrets?: IKeyPair,
+      skipKmsImport?: boolean,
     }[],
     didMethod?: string,
   }): Promise<DID> {
@@ -200,7 +202,7 @@ export class AgentIdentity {
     const recoveryKey = await this.kms.create(Suite.ES256k);
 
     if (params.keysToImport) {
-      for (let ktu of params.keysToImport) {
+      for (let ktu of params.keysToImport.filter(x => !x.skipKmsImport)) {
         await this.kms.import({
           publicKeyHex: BaseConverter.convert(ktu.publicKeyJWK, Base.JWK, Base.Hex, ktu.secrets.keyType),
           secret: ktu.secrets,
@@ -417,7 +419,8 @@ export class AgentIdentity {
       id: string,
       vmKey: VMKey,
       publicKeyJWK: IJWK,
-      secrets: any,
+      secrets?: any,
+      skipKmsImport?: boolean,
     }[],
     updateKeysToRemove?: {
       publicKeys?: IJWK[];
@@ -430,7 +433,7 @@ export class AgentIdentity {
 
     // Import pre-generated keys to KMS (e.g., Ed25519)
     if (params.keysToImport) {
-      for (const ktu of params.keysToImport) {
+      for (const ktu of params.keysToImport.filter(x => !x.skipKmsImport)) {
         await this.kms.import({
           publicKeyHex: BaseConverter.convert(ktu.publicKeyJWK, Base.JWK, Base.Hex, ktu.secrets.keyType),
           secret: ktu.secrets,

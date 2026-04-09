@@ -122,9 +122,11 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                         });
                         this.onCredentialIssued.trigger({ vc: vc, toDID: DID.from(vc.credentialSubject.id), invitationId });
                     } else {
-                        // For SD-JWT (string), extract holderDID from the original credential
+                        // For SD-JWT (string), extract holderDID from the original credential or fallback to message.from
                         const holderDID = typeof vc === 'string'
-                            ? (args.vc.credentialSubject && args.vc.credentialSubject.id ? DID.from(args.vc.credentialSubject.id) : null)
+                            ? (args.vc.credentialSubject?.id
+                                ? DID.from(args.vc.credentialSubject.id)
+                                : (args.message?.from ? DID.from(args.message.from) : null))
                             : DID.from(vc.credentialSubject.id);
                         this.onCredentialIssued.trigger({ vc: vc, toDID: holderDID, invitationId });
                     }
