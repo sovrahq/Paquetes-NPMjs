@@ -87,7 +87,7 @@ export class VerifiableCredentialRevoked extends VCSuiteError {
     name = "verifiable-credential-revoked";
 
     constructor(private errors: string[]) {
-        super()
+        super(errors?.length ? errors.join('; ') : 'Credential has been revoked')
     }
 }
 
@@ -96,7 +96,7 @@ export class VerifiableCredentialSuspended extends VCSuiteError {
     name = "verifiable-credential-suspended";
 
     constructor(private errors: string[]) {
-        super()
+        super(errors?.length ? errors.join('; ') : 'Credential has been suspended')
     }
 }
 
