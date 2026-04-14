@@ -35,5 +35,8 @@
     "build": "yarn workspaces run build",
     "clean": "find . \\( -name 'node_modules' -o -name 'dist' -o -name 'lib' \\) -type d -prune -exec rm -rf '{}' +",
     "test": "node test/verify-renamed-packages.js"
+  },
+  "dependencies": {
+    "@sovrahq/vc-verifier": "1.2.0-4"
   }
 }
