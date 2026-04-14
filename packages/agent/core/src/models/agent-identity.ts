@@ -198,9 +198,7 @@ export class AgentIdentity {
       params.keysToCreate.push({ id: 'rsa', vmKey: VMKey.RSA });
     }
 
-    const updateKey = await this.kms.create(Suite.ES256k);
-    const recoveryKey = await this.kms.create(Suite.ES256k);
-
+    // keysToImport must run before parallel key creation (has dependencies)
     if (params.keysToImport) {
       for (let ktu of params.keysToImport.filter(x => !x.skipKmsImport)) {
         await this.kms.import({
@@ -210,52 +208,70 @@ export class AgentIdentity {
       }
     }
 
-    const didCommKeys = [...await Promise.all(
-      params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.DIDComm && !x.skipKmsImport)
-        .map(async (x) => ({
-          id: x.id!,
-          pbk: await this.kms.create(Suite.DIDCommV2),
-        }))
-    ), ...(params.keysToImport || [])?.filter(x => x.vmKey == VMKey.DIDComm).map(x => ({
+    // Create all cryptographic keys in parallel for faster DID creation
+    const [
+      updateKey,
+      recoveryKey,
+      didCommCreated,
+      bbsbls2020Created,
+      rsaCreated,
+      ecdsCreated,
+    ] = await Promise.all([
+      this.kms.create(Suite.ES256k),
+      this.kms.create(Suite.ES256k),
+      Promise.all(
+        params.keysToCreate
+          .filter((x) => x.vmKey == VMKey.DIDComm && !x.skipKmsImport)
+          .map(async (x) => ({
+            id: x.id!,
+            pbk: await this.kms.create(Suite.DIDCommV2),
+          }))
+      ),
+      Promise.all(
+        params.keysToCreate
+          .filter((x) => x.vmKey == VMKey.VC && !x.skipKmsImport)
+          .map(async (x) => ({
+            id: x.id!,
+            pbk: await this.kms.create(Suite.Bbsbls2020),
+          }))
+      ),
+      Promise.all(
+        params.keysToCreate
+          .filter((x) => x.vmKey == VMKey.RSA && !x.skipKmsImport)
+          .map(async (x) => ({
+            id: x.id!,
+            pbk: await this.kms.create(Suite.RsaSignature2018),
+          }))
+      ),
+      Promise.all(
+        params.keysToCreate
+          .filter((x) => x.vmKey == VMKey.ES256k && !x.skipKmsImport)
+          .map(async (x) => ({
+            id: x.id!,
+            pbk: await this.kms.create(Suite.ES256k),
+          }))
+      ),
+    ]);
+
+    // Merge created keys with imported keys
+    const didCommKeys = [...didCommCreated, ...(params.keysToImport || [])?.filter(x => x.vmKey == VMKey.DIDComm).map(x => ({
       id: x.id,
       pbk: { publicKeyJWK: x.publicKeyJWK }
     }))];
 
-    const bbsbls2020Keys = [...await Promise.all(
-      params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.VC && !x.skipKmsImport)
-        .map(async (x) => ({
-          id: x.id!,
-          pbk: await this.kms.create(Suite.Bbsbls2020),
-        }))
-    ),
+    const bbsbls2020Keys = [...bbsbls2020Created,
     ...(params.keysToImport || [])?.filter(x => x.vmKey == VMKey.VC).map(x => ({
       id: x.id,
       pbk: { publicKeyJWK: x.publicKeyJWK }
     }))];
 
-    const rsaKeys = [...await Promise.all(
-      params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.RSA && !x.skipKmsImport)
-        .map(async (x) => ({
-          id: x.id!,
-          pbk: await this.kms.create(Suite.RsaSignature2018),
-        }))
-    ),
+    const rsaKeys = [...rsaCreated,
     ...(params.keysToImport || [])?.filter(x => x.vmKey == VMKey.RSA).map(x => ({
       id: x.id,
       pbk: { publicKeyJWK: x.publicKeyJWK }
     }))];
 
-    const ecdskeys = [...await Promise.all(
-      params.keysToCreate
-        .filter((x) => x.vmKey == VMKey.ES256k && !x.skipKmsImport)
-        .map(async (x) => ({
-          id: x.id!,
-          pbk: await this.kms.create(Suite.ES256k),
-        }))
-    ),
+    const ecdskeys = [...ecdsCreated,
     ...(params.keysToImport || [])?.filter(x => x.vmKey == VMKey.ES256k).map(x => ({
       id: x.id,
       pbk: { publicKeyJWK: x.publicKeyJWK }
