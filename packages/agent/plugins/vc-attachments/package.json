@@ -1,6 +1,6 @@
 {
   "name": "@sovrahq/vc-attachments-agent-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "VC Attachments Agent Plugin",
   "main": "dist/index.js",
   "private": false,
