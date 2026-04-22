@@ -1197,6 +1197,174 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz#821f8442f4175d8f0467b9daf26e3a18e2d02af2"
   integrity sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==
 
+"@sovrahq/agent@0.10.0-7":
+  version "0.10.0-7"
+  resolved "https://registry.yarnpkg.com/@sovrahq/agent/-/agent-0.10.0-7.tgz#ee4e257dacd1f03c1c18afc2e3f93a2a3e55a644"
+  integrity sha512-PZN1fUSL2J/cs05OYVHEU6iaiZwvSfLauR0KHBHAQ306tjytZL+IYjpiUBOkBo6kOr6XQj+DbNBWC5xZhprBEw==
+  dependencies:
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/did-registry" "^1.5.2"
+    "@sovrahq/did-resolver" "^1.4.6"
+    "@sovrahq/dwn-client" "^1.2.2"
+    "@sovrahq/dwn-client-ami" "^1.0.3"
+    "@sovrahq/kms-client" "1.4.0-4"
+    "@sovrahq/kms-core" "1.4.0-4"
+    "@sovrahq/modena-sdk" "1.3.4"
+    "@sovrahq/vc-core" "1.1.0-2"
+    "@sovrahq/vc-verifier" "1.2.0-2"
+    "@sovrahq/waci" "3.4.0"
+    "@types/base-64" "^1.0.0"
+    async-lock "^1.4.0"
+    axios "^1.4.0"
+    base-64 "^1.0.0"
+    jsonpath "^1.1.1"
+    jsonschema "^1.4.1"
+    jwt-decode "^3.1.2"
+    lru-cache "4.1.5"
+    socket.io "4.6.1"
+    socket.io-client "4.6.1"
+
+"@sovrahq/agent@0.10.0-8":
+  version "0.10.0-8"
+  resolved "https://registry.yarnpkg.com/@sovrahq/agent/-/agent-0.10.0-8.tgz#51120dde4fcb78b3e9a03cd66294904ca78c3379"
+  integrity sha512-RfReKa88cDR9RuqNKFuuENFKna8RB1YP10yHZ62xrkCKBAyQNbhUtZL81zBAj0Bcbhh0wVkwzB7gIPP2Mq3BzA==
+  dependencies:
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/did-registry" "^1.5.2"
+    "@sovrahq/did-resolver" "^1.4.6"
+    "@sovrahq/dwn-client" "^1.2.2"
+    "@sovrahq/dwn-client-ami" "^1.0.3"
+    "@sovrahq/kms-client" "1.4.0-4"
+    "@sovrahq/kms-core" "1.4.0-4"
+    "@sovrahq/modena-sdk" "1.3.4"
+    "@sovrahq/vc-core" "1.1.0-2"
+    "@sovrahq/vc-verifier" "1.2.0-2"
+    "@sovrahq/waci" "3.4.0"
+    "@types/base-64" "^1.0.0"
+    async-lock "^1.4.0"
+    axios "^1.4.0"
+    base-64 "^1.0.0"
+    jsonpath "^1.1.1"
+    jsonschema "^1.4.1"
+    jwt-decode "^3.1.2"
+    lru-cache "4.1.5"
+    socket.io "4.6.1"
+    socket.io-client "4.6.1"
+
+"@sovrahq/did-registry@1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@sovrahq/did-registry/-/did-registry-1.5.2.tgz#8b1ab8d79d15c2a49d3b48f1f58e6887e9bb93f9"
+  integrity sha512-oF+DqMrfvpCqVQLnWMI0ZVD9+OwIghHMO4ulswyru64C/Jw/Jw+cdLhHKu1KZOE5CrzfCzSNSXEOp9OPmWqBlQ==
+  dependencies:
+    "@decentralized-identity/ion-sdk" "0.5.0"
+    "@sovrahq/core" "1.0.7"
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/kms-client" "1.4.0-4"
+    "@sovrahq/kms-core" "1.4.0-4"
+    "@sovrahq/modena-sdk" "^1.3.4"
+    "@sovrahq/vc-core" "1.1.0-2"
+    "@types/node-fetch" "^2.6.1"
+    bs58 "^5.0.0"
+    multibase "^4.0.6"
+    node-fetch "^2.6.1"
+    text-encoding "^0.7.0"
+
+"@sovrahq/kms-client@1.4.0-4":
+  version "1.4.0-4"
+  resolved "https://registry.yarnpkg.com/@sovrahq/kms-client/-/kms-client-1.4.0-4.tgz#98a42e36ae14dff561206508d5afd32e8cb70c68"
+  integrity sha512-HFXeCenJKTS6d015Ru1S/X2DDpYAemh3WhzcEtE9+57fkNqzrqnoJvPAkTBCKRCpYPYQx+WeSi1DMlygXxiAJw==
+  dependencies:
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/kms-core" "^1.4.0-4"
+    "@sovrahq/kms-suite-bbsbls2020" "1.2.0-2"
+    "@sovrahq/kms-suite-didcomm" "^1.1.2"
+    "@sovrahq/kms-suite-didcomm-v2" "^1.3.2"
+    "@sovrahq/kms-suite-es256k" "^1.2.4"
+    "@sovrahq/kms-suite-rsa-signature-2018" "^1.1.3"
+    "@sovrahq/vc-core" "1.1.0-2"
+    ts-jest "^28.0.1"
+
+"@sovrahq/kms-core@1.4.0-4":
+  version "1.4.0-4"
+  resolved "https://registry.yarnpkg.com/@sovrahq/kms-core/-/kms-core-1.4.0-4.tgz#d752dbda25f99dfb1f1bc31770fef27a8da50394"
+  integrity sha512-pDHgeVkiI0DbW8m/0ODOnd/Cjfgm/eZgJHAzTLw/0b46cNbnDUqjNeh+slT5lmy7jj+c/jNRN+0NfblltMjCKg==
+  dependencies:
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/vc-core" "1.1.0-2"
+    base64url "^3.0.1"
+    bs58 "^5.0.0"
+    did-jwt "^6.11.0"
+    jsonld "^5.2.0"
+    multibase "^4.0.6"
+    multiformats "^9.6.5"
+    text-encoding "^0.7.0"
+
+"@sovrahq/modena-sdk@1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@sovrahq/modena-sdk/-/modena-sdk-1.3.4.tgz#44282ba51788cdec46e1ae11aaff836dd491a322"
+  integrity sha512-ydsET03TCUs6JZ+KbLiqbU+/TdOYjecPdh/h6HapdtgHcTG09rR72XhC2rixc7AlFarvEQLCl2mX79A01TpIkg==
+  dependencies:
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/kms-client" "1.4.0-4"
+    "@sovrahq/kms-core" "1.4.0-4"
+    "@sovrahq/vc-core" "1.1.0-2"
+    "@transmute/did-key-secp256k1" "^0.2.1-unstable.35"
+    "@waiting/base64" "4.2.9"
+    canonicalize "1.0.1"
+    jest "^28.0.3"
+    multihashes "0.4.14"
+    randombytes "2.1.0"
+    ts-jest "^28.0.1"
+    uri-js "4.4.0"
+
+"@sovrahq/vc-core@1.1.0-2":
+  version "1.1.0-2"
+  resolved "https://registry.yarnpkg.com/@sovrahq/vc-core/-/vc-core-1.1.0-2.tgz#ccb72495f95ba99a0548933d4ca3e8c9a3637b6f"
+  integrity sha512-1KD70sneM6K7Oz7vEpDdMBvxWgzYR2fl39wZnhcmucq2r+mvU+JPaY2ubGWkcbv/lHUZDe9Gqwg2h08B/sI8Sw==
+  dependencies:
+    "@sovrahq/did-core" "1.1.2"
+    jsonld "^5.2.0"
+
+"@sovrahq/vc-verifier@1.2.0-2":
+  version "1.2.0-2"
+  resolved "https://registry.yarnpkg.com/@sovrahq/vc-verifier/-/vc-verifier-1.2.0-2.tgz#7ee103f15c65cd90f8343dc250348a19d50a06e5"
+  integrity sha512-B0C4PtRLlOCGwOJZBqGhedXU9h3q7WZIJf/7oH0I6s+INYuiU6NVldu22QZaJ4aFNwcR72qCdjiOzx6XPrIQPw==
+  dependencies:
+    "@mattrglobal/jsonld-signatures-bbs" "1.1.0"
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/kms-core" "^1.4.0-4"
+    "@sovrahq/vc-core" "^1.1.0-2"
+    axios "^0.27.2"
+    jsonld "3.1.0"
+    jsonld-document-loader "1.2.1"
+    jsonld-signatures "5.0.1"
+    jwk-to-pem "^2.0.5"
+
+"@sovrahq/vc-verifier@1.2.0-4":
+  version "1.2.0-4"
+  resolved "https://registry.yarnpkg.com/@sovrahq/vc-verifier/-/vc-verifier-1.2.0-4.tgz#401e65ce34f4ea787d26a5b3fd66536c22bf74fa"
+  integrity sha512-JA0TENi7NCoaEnpZhYO7dgNxbxryA7qgg/W43JTP+XquJXTsBlflrZXBWt+stGQhoYFWQhksz7QP/R4lBFLxew==
+  dependencies:
+    "@mattrglobal/jsonld-signatures-bbs" "1.1.0"
+    "@sovrahq/did-core" "1.1.2"
+    "@sovrahq/kms-core" "^1.4.0-4"
+    "@sovrahq/vc-core" "^1.1.0-2"
+    axios "^0.27.2"
+    jsonld "3.1.0"
+    jsonld-document-loader "1.2.1"
+    jsonld-signatures "5.0.1"
+    jwk-to-pem "^2.0.5"
+
+"@sovrahq/waci@3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@sovrahq/waci/-/waci-3.4.0.tgz#b771da61e82db034413a0fb9a090fcaed854316f"
+  integrity sha512-ODk4gfdlTtD9G8sWqLKU4qcTDxz9WvAiLMSsB/jZjLybosFbq+nbv+XXVoWPtcv6x9yvmirjeP9oDi4OXmnF0Q==
+  dependencies:
+    jsonpath "^1.1.1"
+    jsonschema "^1.4.1"
+    lodash "^4.17.21"
+    uuid "^8.3.2"
+
 "@stablelib/aead@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@stablelib/aead/-/aead-1.0.1.tgz#c4b1106df9c23d1b867eb9b276d8f42d5fc4c0c3"
@@ -2928,6 +3096,11 @@ crypt@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
   integrity sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==
+
+crypto-js@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
+  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
 
 crypto-ld@3.8.0:
   version "3.8.0"
@@ -5861,7 +6034,7 @@ mime-db@1.52.0:
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.52.0.tgz#bbabcdc02859f4987301c856e3387ce5ec43bf70"
   integrity sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==
 
-mime-types@^2.1.12, mime-types@~2.1.19, mime-types@~2.1.34:
+mime-types@^2.1.12, mime-types@^2.1.35, mime-types@~2.1.19, mime-types@~2.1.34:
   version "2.1.35"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.35.tgz#381a871b62a734450660ae3deee44813f70d959a"
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==

@@ -29,7 +29,8 @@
     "packages/ami/ami-core",
     "packages/ami/ami-sdk",
     "packages/agent/plugins/ami",
-    "packages/agent/plugins/status-list"
+    "packages/agent/plugins/status-list",
+    "packages/agent/plugins/vc-attachments"
   ],
   "scripts": {
     "build": "yarn workspaces run build",

@@ -61,6 +61,7 @@ jobs:
             "packages/agent/plugins/one-click"
             "packages/agent/plugins/ami"
             "packages/agent/plugins/status-list"
+            "packages/agent/plugins/vc-attachments"
             "packages/ami/ami-core"
             "packages/ami/ami-sdk"
           )
