@@ -1,6 +1,9 @@
 import axios from "axios";
 import {
   Agent,
+  IAgentPlugin,
+  IAgentPluginMessage,
+  IAgentPluginResponse,
   VerifiableCredential,
 } from '@sovrahq/agent';
 import { LocalAttachment, VCAttachment } from '../models/attachment';
@@ -9,15 +12,6 @@ import { AttachmentVerifiableCredential } from '../models/vc-attachment';
 import { LiteEvent } from '../events/lite-event';
 const cryptojs = require("crypto-js");
 const mime = require('mime-types');
-
-/**
- * Minimal lifecycle interface a plugin registered via `agentPlugins` must satisfy.
- * Mirrors the extrimian `AgentPluginBase` contract; kept internal to avoid a hard
- * dependency on an unexported type from `@sovrahq/agent`.
- */
-interface AgentPluginLifecycle {
-  initialize(params: { agent: Agent }): Promise<void>;
-}
 
 /**
  * Extracts the raw `VerifiableCredential` from either a plain VC or the
@@ -31,7 +25,7 @@ function unwrapCredential(entry: any): VerifiableCredential {
   return entry as VerifiableCredential;
 }
 
-export class ExtrimianVCAttachmentAgentPlugin implements AgentPluginLifecycle {
+export class ExtrimianVCAttachmentAgentPlugin implements IAgentPlugin {
   private agent: Agent;
 
   private fileAttachmentContextName: string;
@@ -46,6 +40,14 @@ export class ExtrimianVCAttachmentAgentPlugin implements AgentPluginLifecycle {
   }) {
     this.fileAttachmentContextName = opts.fileAttachmentContextName;
     this.attachmentStorage = opts.attachmentStorage;
+  }
+
+  async canHandle(_input: IAgentPluginMessage): Promise<boolean> {
+    return false;
+  }
+
+  async handle(_input: IAgentPluginMessage): Promise<IAgentPluginResponse> {
+    return undefined;
   }
 
   async initialize(params: { agent: Agent }): Promise<void> {
