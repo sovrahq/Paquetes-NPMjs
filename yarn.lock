@@ -1340,21 +1340,6 @@
     jsonld-signatures "5.0.1"
     jwk-to-pem "^2.0.5"
 
-"@sovrahq/vc-verifier@1.2.0-4":
-  version "1.2.0-4"
-  resolved "https://registry.yarnpkg.com/@sovrahq/vc-verifier/-/vc-verifier-1.2.0-4.tgz#401e65ce34f4ea787d26a5b3fd66536c22bf74fa"
-  integrity sha512-JA0TENi7NCoaEnpZhYO7dgNxbxryA7qgg/W43JTP+XquJXTsBlflrZXBWt+stGQhoYFWQhksz7QP/R4lBFLxew==
-  dependencies:
-    "@mattrglobal/jsonld-signatures-bbs" "1.1.0"
-    "@sovrahq/did-core" "1.1.2"
-    "@sovrahq/kms-core" "^1.4.0-4"
-    "@sovrahq/vc-core" "^1.1.0-2"
-    axios "^0.27.2"
-    jsonld "3.1.0"
-    jsonld-document-loader "1.2.1"
-    jsonld-signatures "5.0.1"
-    jwk-to-pem "^2.0.5"
-
 "@sovrahq/waci@3.4.0":
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@sovrahq/waci/-/waci-3.4.0.tgz#b771da61e82db034413a0fb9a090fcaed854316f"
