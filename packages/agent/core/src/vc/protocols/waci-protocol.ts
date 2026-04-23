@@ -423,6 +423,7 @@ export class WACIProtocol extends VCProtocol<WACIMessage> {
                                 data: jsonpath.value(p.credentialFulfillment[0].data.json, credentialDescriptor.path) as VerifiableCredential,
                                 styles: descriptor.styles,
                                 display: descriptor.display,
+                                outputDescriptor: descriptor,
                             };
                         }
                     )
@@ -723,6 +724,8 @@ export type VerifiableCredentialWithInfo = {
     data: VerifiableCredential;
     styles?: CredentialManifestStyles;
     display?: CredentialDisplay;
+    /** Full output descriptor from the credential manifest (WACI) or credential response (OID4VCI). */
+    outputDescriptor?: OutputDescriptor | any;
 }
 
 export class SelectiveDisclosure {
